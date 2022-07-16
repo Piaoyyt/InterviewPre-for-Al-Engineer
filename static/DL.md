@@ -4,15 +4,15 @@
 > deep learning for Algorithm Interview.
 
 ## Main Content
-- [Basic Concept](##1.Basic-Concpet-of-the-DL)   
-   - [Optimizer](###1.1Optimizer)
+- [Basic Concept](#BasicC)   
+   - [Optimizer](#Optim)
 
 
 
 
-## 1.Basic Concpet of the DL
+## <a id="BasicC"></a>1.Basic Concpet of the DL
 
-### 1.1.Optimizer
+### <a id="Optim"></a>1.1.Optimizer
 > **概念**：深度网络模型训练里面负责来控制网络参数更新方向和更新速度的结构。
 #### 1.SGD
 SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里面参数更新的
