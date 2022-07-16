@@ -39,3 +39,7 @@
 > 这种情况我们常常结合贪心的思路来去做，这样可以大大减少时间和空间开销。
 - [最长递增子序列](https://leetcode.cn/problems/longest-increasing-subsequence/)
 - [最长递增子序列个数](https://leetcode.cn/problems/number-of-longest-increasing-subsequence/)
+- [俄罗斯套娃信封问题](https://leetcode.cn/problems/russian-doll-envelopes/)
+- [堆箱子](https://leetcode.cn/problems/pile-box-lcci/)
+- [无矛盾的最佳球队](https://leetcode.cn/problems/best-team-with-no-conflicts/)
+#### 3.字符串问题
