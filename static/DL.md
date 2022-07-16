@@ -7,8 +7,7 @@
 - [Basic Concept](#BasicC)   
    - [Optimizer](#Optim)
 
-
-
+  
 
 ## <a id="BasicC"></a>1.Basic Concpet of the DL
 
