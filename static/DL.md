@@ -4,8 +4,8 @@
 > deep learning for Algorithm Interview.
 
 ## Main Content
-- [Basic Concept](#1.Basic-Concpet-of-the-DL)   
-   - [Optimizer](#1.1Optimizer)
+- [Basic Concept](##1.Basic-Concpet-of-the-DL)   
+   - [Optimizer](###1.1Optimizer)
 
 
 
