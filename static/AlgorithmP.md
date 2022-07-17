@@ -43,3 +43,22 @@
 - [堆箱子](https://leetcode.cn/problems/pile-box-lcci/)
 - [无矛盾的最佳球队](https://leetcode.cn/problems/best-team-with-no-conflicts/)
 #### 3.字符串问题
+> 字符串相关考察的问题主要是回文相关问题，比如典型的回文子序列和回文子串问题。
+
+- [最长回文子串](https://leetcode.cn/problems/longest-palindromic-substring/)
+- [最长回文子序列](https://leetcode.cn/problems/longest-palindromic-subsequence/)
+- [统计不同回文子序列](https://leetcode.cn/problems/count-different-palindromic-subsequences/)
+- [段式回文](https://leetcode.cn/problems/longest-chunked-palindrome-decomposition/)
+- [让字符串成为回文串的最少插入次数](https://leetcode.cn/problems/minimum-insertion-steps-to-make-a-string-palindrome/)
+
+#### 4.背包问题
+>所谓的背包问题，即在给定的背包限制容量下(通常是某一个约束，比如总重量、总体积等)，
+> 去从给定的物品里面选取最优的组合值，用dp解答的思路即是逐渐扩大限制条件，逐渐扩大
+> 可拿取物体的范围，最后得到全局下的最优解
+#### 5.状态压缩问题
+
+#### 6.数位dp问题
+
+#### 7.概率dp问题
+
+#### 8.博弈dp问题
