@@ -76,7 +76,24 @@
 - 基于模型
   > 其实说到模型就比较宽泛了，凡是用机器学习来去建模解决这个问题的其实都可以理解成一个
   > 基于模型的方法，通过建立适当的模型来去更好的计算用户之间、产品之间的相似度，从而最终
-  > 给用户推荐分数最高的产品。[](https://cloud.tencent.com/developer/article/1184600)
+  > 给用户推荐分数最高的产品。[基于模型](https://cloud.tencent.com/developer/article/1184600)
+  - >>矩阵分解的方式：典型的就是基于隐向量的FM方法，即在协同过滤共现矩阵的基础上
+  使用更稠密的隐向量表示用户和物品，还有许多变种FunkSVD，BiasSVD和SVD++。
+  - >>[关联算法](https://blog.csdn.net/qq_36523839/article/details/82191677):
+    寻找数据之间的关联，通过频繁集项（经常出现在一起的物品）和关联规则（物品之间可能出现
+    很强的关系），典型的如[Apriori算法、](https://www.cnblogs.com/pinard/p/6293298.html)
+    [FP Tree、](https://www.cnblogs.com/pinard/p/6307064.html)
+    [PrefixSpan](https://www.cnblogs.com/pinard/p/6323182.html)
+  - >> 聚类算法：
+    将用户或者产品进行聚类分析，得到各个用户群或者产品群，对于待推荐用户，直接根据同一个用户群里面
+    评分高的产品来去做推荐或者推荐同一个产品群里面的其它产品。典型的比如
+    [k-means](https://www.cnblogs.com/pinard/p/6164214.html)
+    [BIRCH](https://www.cnblogs.com/pinard/p/6179132.html)
+    [DBSCAN](https://www.cnblogs.com/pinard/p/6208966.html)
+  - >> 分类算法：
+    典型的分类算法就有逻辑回归和贝叶斯算法。
+    >> 回归算法：
+    典型的回归有岭回归、回归树、支持向量回归。
 ## <a id = 'Rank'></a>3.排序模型
 
 ### 源码部分
