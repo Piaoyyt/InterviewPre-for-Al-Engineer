@@ -129,7 +129,7 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
   检验为非背景的部分传入后面的分类回归网络进行最后的目标检测和回归，整体上看已经很接近one-stage的设计思路
   > 了，即尽可能将候选框提出和检测流程融到一块。
 - One-stage
-  #### 1.Yolo[代表]
+  #### 1.Yolo
   > 将待检测的图片划分成等大的网格，每个网格经过深度网络(后面是两层全连接层+reshape构成)映射到输出feature map的一个点上，该点的不同通道
   > 存储了网格里面是否存在目标的信息，在原论文的设计里面，每一个网格负责预测两个目标（其实实际里面更加简化了，
   > 即这两个目标默认是同一个），所以yolo里面实际的检测框数目很少，即S x S x 2，并且实际的目标只能有S x S个，所以
@@ -163,16 +163,15 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
 - [yolox](https://zhuanlan.zhihu.com/p/392221567)
   > 1、Decoupled head(预测分支解耦):相比于yolov3到v5，其中的分类和回归都是共享一个特征，即非解耦的方式得到，yolox里面采用解耦的方式分别来预测
   > 框的类别和回归坐标。  
-  > 2、强大的数据增强:添加Mosaic[将图片进行随机的旋转、裁剪、拼接]和MixUp[两张图以一定的比例对rgb值进行混合，同时需要模型预测出原本两张图中所有的目标。]  
+  > 2、强大的数据增强:添加Mosaic（将图片进行随机的旋转、裁剪、拼接）和MixUp（两张图以一定的比例对rgb值进行混合，同时需要模型预测出原本两张图中所有的目标）。  
   > 3、Anchor-free：使用anchor时，为了调优模型，需要对数据聚类分析，确定最优锚点，缺乏泛化性；增加了检测头复杂度，增加了每幅图像预测数量。
-  > 使用ancho-freer可以减少调整参数数量，减少涉及的使用技巧。
+  > 使用ancho-freer可以减少调整参数数量，减少涉及的使用技巧。  
   > 4、[SiamOTA:](https://zhuanlan.zhihu.com/p/392221567) 其实就是正样本的选择方式，有的是直接将gt所在的那个格子中所有的预测框与gt计算
   > 取最高的作为正样本（yolov3）;有的是取所在网格一定半径的格子来计算得到多个正样本；这里anchor-free下每一个特征图只预测一组anchor，而SiamOta的
   > 核心就在于对于不同的gt，我们去计算出前10个损失最小的框，然后将这些框的IOU求和，求和的结果就是最后要选择的正样本数量，即对于不同gt选不同的正样本数量。
 - [yolov6](https://tech.meituan.com/2022/06/23/yolov6-a-fast-and-accurate-target-detection-framework-is-opening-source.html)
   >统一设计了更高效的 Backbone 和 Neck ：受到硬件感知神经网络设计思想的启发，基于 RepVGG style[4] 设计了可重参数化、更高效的骨干网络 EfficientRep Backbone 和 Rep-PAN Neck。
   优化设计了更简洁有效的 Efficient Decoupled Head，在维持精度的同时，进一步降低了一般解耦头带来的额外延时开销。
-在训练策略上，我们采用Anchor-free 无锚范式，同时辅以 SimOTA[2] 标签分配策略以及 SIoU[9] 边界框回归损失来进一步提高检测精度。
-- []()
+在训练策略上，我们采用Anchor-free 无锚范式，同时辅以 SimOTA 标签分配策略以及 SIoU 边界框回归损失来进一步提高检测精度。
 ## <a id="Face Recognition"></a>4.人脸识别篇
 ## <a id=""></a>5.
