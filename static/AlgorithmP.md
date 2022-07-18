@@ -54,11 +54,40 @@
 #### 4.背包问题
 >所谓的背包问题，即在给定的背包限制容量下(通常是某一个约束，比如总重量、总体积等)，
 > 去从给定的物品里面选取最优的组合值，用dp解答的思路即是逐渐扩大限制条件，逐渐扩大
-> 可拿取物体的范围，最后得到全局下的最优解
+> 可拿取物体的范围，最后得到全局下的最优解。
+- 01问题
+  - [分割等和子集:01](https://leetcode.cn/problems/partition-equal-subset-sum/)
+  - [一和零](https://leetcode.cn/problems/ones-and-zeroes/)
+  - [最后一块石头的重量](https://leetcode.cn/problems/last-stone-weight-ii/)
+  - [盈利计划](https://leetcode.cn/problems/profitable-schemes/)
+- 完全问题
+  - [零钱兑换](https://leetcode.cn/problems/coin-change/)
+  - [零钱兑换II](https://leetcode.cn/problems/coin-change-2/)
+  
 #### 5.状态压缩问题
+> 对于题目中给的状态有时候不好表示或者表示起来十分复杂的时候，可以考虑用状态压缩的方式来表示，
+> 所谓的状态压缩即将不同的状态用一串二进制数来进行表示，每一个位上的二进制数即代表状态的具体
+> 构成，为什么表示成二进制数呢？因为在更新状态和判断的时候我们可以利用二进制中的位运算来巧妙
+> 的表示，典型的就是合并状态用或操作，判断用与操作等
 
+- [安卓手势解锁](https://leetcode.cn/problems/android-unlock-patterns/)
+- [我能赢吗](https://leetcode.cn/problems/can-i-win/)
+- [Nim游戏II](https://leetcode.cn/problems/game-of-nim/)
 #### 6.数位dp问题
+> 数位dp问题即在求解关于数的不同位值所构成的整体状态的统计问题，典型的比如给定一个数值大小的约束，
+> 并给定能取的数字范围，求限制下所能构成的有效数字的个数。
 
+**数位问题的关键在于：**  
+1. 根据所给的限制对每一位上的范围做一个计算；  
+2. 分析影响当前位置上数字取值的范围的因素【前导0、前值是否达到上界等】；
+3. 设计dfs函数，可以用dfs的原因在于高位的状态会影响下低位的值选取情况，
+所以从最高位层层往下遍历最后就可以得到想要的结果，因此传入dfs的参数一定
+是对当前位值选取范围有决定意义的参数量【位次、前导0、前值是否上界等】，通 
+过这些参数来决定当前位的取值范围，然后又根据当前位的选取给下低位传递新的
+参数【即递归的思想】，直到碰到递归的终止条件【一般是递归完最低位就可以结束】；
+- [最大位N的数字组合](https://leetcode.cn/problems/numbers-at-most-n-given-digit-set/)
+- [中心对称数](https://leetcode.cn/problems/strobogrammatic-number-iii/)
+- [统计各位数字都不同的数字个数](https://leetcode.cn/problems/count-numbers-with-unique-digits/)
 #### 7.概率dp问题
 
 #### 8.博弈dp问题
