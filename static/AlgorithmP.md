@@ -89,5 +89,6 @@
 - [中心对称数](https://leetcode.cn/problems/strobogrammatic-number-iii/)
 - [统计各位数字都不同的数字个数](https://leetcode.cn/problems/count-numbers-with-unique-digits/)
 #### 7.概率dp问题
-
+> 运用概率论的知识对问题进行分析来设定状态以及状态转移方程。
+- [锦标赛](https://www.notion.so/b3637c19e8f34c8bb32ecce5b5bd10c5#4f251640025944d0ad24dedebd412608)
 #### 8.博弈dp问题
