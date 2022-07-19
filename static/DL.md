@@ -7,7 +7,7 @@
 - [基本概念](#BasicC)   
    - [优化器](#Optim)
 - [深度网络模型](#NetModel)
-- [目标检测](#Object_Detection)
+- [目标检测](#ObjectDetection)
 - [人脸识别]()
 - []
 
@@ -110,8 +110,8 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
 > 核心点在于shuffle the channel，我们知道分组卷积会造成一个后果，就是不同组的channel之间的信息被忽略了，因
 > 为组分好之后，不同组就无法交互了，而shuffle就是提前把通道进行打乱，然后对打乱后的分组，这样就可以解决这个问题。
 > 
-## <a id="Object Detection"></a>3.目标检测篇
-### <a id="Classical Method"></a>3.1经典方法
+## <a id="ObjectDetection"></a>3.目标检测篇
+### <a id="ClassicalMethod"></a>3.1经典方法
 - Two-stage
   #### 1.滑动窗口
   >滑动窗口产生候选框→候选框的特征送入到SVM分类器进行分类、线性回归进行回归
@@ -153,13 +153,13 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
   > 网络结构增加了Focus操作，即切片操作； 自适应的锚框的计算，非预先选定，而是在训练过程中同步迭代； 自适应图片的缩放：即测试的时候采用缩减黑
   > 边的方式，而不是传统直接填充，分别求出长宽的缩放比例，并找到最小值；按照最小缩放比例对图像做同性缩放；padding到想要的尺寸。 
   > 其实就是先resize再padding，这样填充黑色比较少。
-### <a id="Common Problems"></a>3.2常见问题
+### <a id="CommonProblems"></a>3.2常见问题
 #### 1.正负样本的划分方式以及为什么让一个gt对应多个正anchor？
 > 1.正样本就是用来学习anchor(先验框)怎么回归的；2.关于正样本的选取，不同的算法设定的策略有所不同，对于yolov3,先判断物体中心点落在哪个网格内，然后计算目标框(gt)与该网格内所有anchor的iou,
 取iou最大的那个为正样本；对于faster_rcnn，首先计算每一个anchor与目标框的iou,如果超过正样本阈值则设定为正样本，然后对每一个目标框将最大iou的anchor设置为正样本（此时iou可能小于正样本阈值），
 保证每一个目标框最少有一个正样本与其匹配；3.每一个gt框匹配多个正样本，能够使模型学习的更充分，二阶段检测算法比一阶段算法精度更高，在一定程度上就是因为二阶段检测算法能够匹配更多的正样本以及设置更
 好的正负样本比例，每个gt框只取对应一个IOU最大的正样本也可以，只是可能会影响模型的精度．
-### <a id="Frontier Paper"></a>3.3前沿思想
+### <a id="FrontierPaper"></a>3.3前沿思想
 - [yolox](https://zhuanlan.zhihu.com/p/392221567)
   > 1、Decoupled head(预测分支解耦):相比于yolov3到v5，其中的分类和回归都是共享一个特征，即非解耦的方式得到，yolox里面采用解耦的方式分别来预测
   > 框的类别和回归坐标。  
@@ -173,5 +173,5 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
   >统一设计了更高效的 Backbone 和 Neck ：受到硬件感知神经网络设计思想的启发，基于 RepVGG style[4] 设计了可重参数化、更高效的骨干网络 EfficientRep Backbone 和 Rep-PAN Neck。
   优化设计了更简洁有效的 Efficient Decoupled Head，在维持精度的同时，进一步降低了一般解耦头带来的额外延时开销。
 在训练策略上，我们采用Anchor-free 无锚范式，同时辅以 SimOTA 标签分配策略以及 SIoU 边界框回归损失来进一步提高检测精度。
-## <a id="Face Recognition"></a>4.人脸识别篇
+## <a id="FaceRecognition"></a>4.人脸识别篇
 ## <a id=""></a>5.
