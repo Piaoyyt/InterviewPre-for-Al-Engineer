@@ -4,11 +4,14 @@
 > deep learning for Algorithm Interview.
 
 ## Main Content
-- [基本概念](#BasicC)   
+- [1.基本概念](#BasicC)   
    - [优化器](#Optim)
-- [深度网络模型](#NetModel)
-- [目标检测](#ObjectDetection)
-- [人脸识别]()
+- [2.深度网络模型](#NetModel)
+- [3.目标检测](#ObjectDetection)
+   - [3.1经典方法](#ClassicalMethod)
+   - [3.2常见问题](#CommonProblems)
+   - [3.3前沿方法](#FrontierPaper)
+- [4.人脸识别]()
 - []
 
 ## <a id="BasicC"></a>1.基本的概念
@@ -173,5 +176,8 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
   >统一设计了更高效的 Backbone 和 Neck ：受到硬件感知神经网络设计思想的启发，基于 RepVGG style[4] 设计了可重参数化、更高效的骨干网络 EfficientRep Backbone 和 Rep-PAN Neck。
   优化设计了更简洁有效的 Efficient Decoupled Head，在维持精度的同时，进一步降低了一般解耦头带来的额外延时开销。
 在训练策略上，我们采用Anchor-free 无锚范式，同时辅以 SimOTA 标签分配策略以及 SIoU 边界框回归损失来进一步提高检测精度。
+- [yolov7](https://arxiv.org/abs/2207.02696)
+  > 主要在几个方面做了改进：1.模型的结构重参数化，即将原来训练中的参数在推理的时候转化为等效的另一组基本可以等效的参数，减少网络结构的复杂度，本文研究了
+  > 如何高效的去替换；2.针对网络的参数提出了扩展和复合缩放，高效利用参数。
 ## <a id="FaceRecognition"></a>4.人脸识别篇
 ## <a id=""></a>5.
