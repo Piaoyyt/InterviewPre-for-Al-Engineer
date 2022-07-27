@@ -8,3 +8,6 @@
 ### 3.[Algorithm problems](./static/AlgorithmP.md)
 ### 4.[Operating system](./static/OS.md)
 ### 5.[Recommendation system](./static/Recommendation.md)
+### 6.[Image Signal Process](./static/ISP.md)
+
+### 7.[Python高级语法](./static/Python.md)
