@@ -141,7 +141,7 @@
 - [子数组是否存在满足某个条件的](https://leetcode.cn/problems/continuous-subarray-sum/)
 - [元素和为目标值的子矩阵数量](https://leetcode.cn/problems/number-of-submatrices-that-sum-to-target/)
 - [统计全为1的正方形子矩阵](https://leetcode.cn/problems/count-square-submatrices-with-all-ones/)
-- [最大正方形](https://leetcode.cn/problems/maximal-square/)
+- [最大正方形](https://leetcode.cn/problems/maximal-square/)  
 ####<a id = 'SubSeq'></a> 2.子序列问题
 >对于子序列问题，相比于子数组少了一个连续的约束条件，因此当前状态可以由更多可能的状态转移而来，即可以不连续的
 > 取，所以一般子序列的问题都是求满足某一个条件下的最优子序列求解问题，解决这类问题常规的思路和连续子数组的解
