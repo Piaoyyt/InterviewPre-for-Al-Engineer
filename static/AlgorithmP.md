@@ -108,9 +108,60 @@
   - > 回文链表的关键是定位链表的中心，我们可以利用快慢指针去做，也可以统计出链表长度再指针右移去做，定位好之后，就是判断两边
     > 是否对称即可，可以用列表存储元素然后逐个判断即可，也可以先将某一部分反转，然后迭代挨个位置判断即可。
   - [回文链表](https://leetcode.cn/problems/palindrome-linked-list/)
+- 双向链表
+  - > 每一个结点有指向左右两边的指针，由于双向链表的删除和插入比较高效，但是索引比较低效，所以常常和哈希表结合在一起来实现一个更
+    高效的数据结构
+  - [LRU缓存](https://leetcode.cn/problems/lru-cache/)
+    
 ### 1.3字符串
+> 字符串也是一种经常考察的结构，通常考察的点是匹配问题、子串子序列问题。
+- 子串的包含问题
+  > 对于判断某一条件的子串是否被包含在给定的字符串里面，一般可以通过数组或者哈希表去统计字符串里面出现的各个字符出现的频数信息，
+  > 结合滑动窗口的思想去判断即可。
+  - [不含重复字符的最长子字符串](https://leetcode.cn/problems/wtcaE1/)
+  - [含有所有字符的最短字符串](https://leetcode.cn/problems/M1oyTv/)
+  - [字符串中的变位词](https://leetcode.cn/problems/MPnaiL/)
+- 子串的统计问题，常常需要dp
+  > 对于可以由之前的状态转移而来的问题，通常可以用dp的思想去做，典型的比如回文问题，字符串匹配问题等
+  - [回文子字符串的个数](https://leetcode.cn/problems/a7VOhD/)
+  - [实现strStr()](https://leetcode.cn/problems/implement-strstr/)
+  - [正则表达式匹配](https://leetcode.cn/problems/regular-expression-matching/)
+
 ### 1.4哈希表
 ### 1.5二叉树
+> 二叉树是树结构里面比较特殊的一种，也是算法考察的高频部分。
+
+- 遍历方式
+  - [二叉树的前序遍历](https://leetcode.cn/problems/binary-tree-preorder-traversal/)
+  - [二叉树的中序遍历](https://leetcode.cn/problems/binary-tree-inorder-traversal/)
+  - [二叉树的后序遍历](https://leetcode.cn/problems/binary-tree-postorder-traversal/)
+    - >三种遍历方式均有递归和迭代两种方式，时间复杂度都是一样但是递归比迭代的空间复杂度要高，最好使用迭代的
+      思路去做，至于迭代过程中结点在迭代过程中存储和打印的2位置就看遍历的方式了，对于前序是根优先，然后是
+      左右，所以可以用栈去存储，先打印根+左子树，再打印根+右子树，即把右子树放在栈底部，啥时候放呢，每一次
+      从栈中取出根结点的时候依次放入右和左；而对于中序遍历，是左根右，所以我们需要先打印左子树再打印右子树，
+      啥时候打印根呢，当然就是沿着当前结点向左深度遍历到结点无左的时候，可以直接将当前结点打印，然后转移到
+      右子树里面；
+  - [二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/)
+- 构建方式
+  - [根据前序和后序遍历构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-postorder-traversal/)
+    ![PrePost](./BT_PrePost.png)
+  - [通过前序遍历和中序遍历构建二叉树](https://www.notion.so/DFS-99fa813923a8476398efc59f406b8d9d#0d8bd2c663054fa7a6205c1f64f5079e)
+    ![PreMid](./BT_PreMid.png)
+  - [从中序与后序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
+    ![pipelineRS](./BT_MidPost.png)
+- 常见的二叉树的类型
+  - [对称二叉树](https://leetcode.cn/problems/symmetric-tree/)
+  - [平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)
+  - [翻转二叉树](https://leetcode.cn/problems/invert-binary-tree/)
+  - [完全二叉树](https://leetcode.cn/problems/count-complete-tree-nodes/)
+  - 二叉搜索树
+    - [二叉搜索树的后序遍历序列](https://leetcode.cn/problems/er-cha-sou-suo-shu-de-hou-xu-bian-li-xu-lie-lcof/)
+    - [二叉搜索树的最近公共祖先](https://leetcode.cn/problems/er-cha-sou-suo-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
+    - [进阶版： 二叉树的最近公共祖先](https://leetcode.cn/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/)
+    - [二叉搜索树的第k大节点](https://leetcode.cn/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/)
+    - [前序遍历构造二叉搜索树](https://leetcode.cn/problems/construct-binary-search-tree-from-preorder-traversal/)
+    - 
+
 ### 1.6图
 ### 1.7堆
 ### 1.8并查集
