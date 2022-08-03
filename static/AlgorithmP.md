@@ -8,7 +8,8 @@
 
 ## <a id = 'Data_struture'></a> 1.数据结构篇
 ### 1.1数组
-> 通常是以一维数组或者二维矩阵的形式来考察，典型的类型如下。
+> 通常是以一维数组或者二维矩阵的形式来
+> 考察，典型的类型如下。
 - 搜索问题
   > 从给定的数组里面搜索满足条件的值，条件可能是恰好等、第一个大于等于、最后一个小于等_,通常是利用二分的思想去做，二分里面重要的是就是确定两个指针，即哪一个指针指向明确的点，哪一个
   > 指向不明确的，循环直至两指针重合即可；对于有些搜索可能不是二分，但是本质上也是不断缩小搜索的范围
@@ -144,11 +145,11 @@
   - [二叉树的层序遍历](https://leetcode.cn/problems/binary-tree-level-order-traversal/)
 - 构建方式
   - [根据前序和后序遍历构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-preorder-and-postorder-traversal/)
-    ![PrePost](./BT_PrePost.png)
+    ![PrePost](pics/BT_PrePost.png)
   - [通过前序遍历和中序遍历构建二叉树](https://www.notion.so/DFS-99fa813923a8476398efc59f406b8d9d#0d8bd2c663054fa7a6205c1f64f5079e)
-    ![PreMid](./BT_PreMid.png)
+    ![PreMid](pics/BT_PreMid.png)
   - [从中序与后序遍历序列构造二叉树](https://leetcode.cn/problems/construct-binary-tree-from-inorder-and-postorder-traversal/)
-    ![pipelineRS](./BT_MidPost.png)
+    ![pipelineRS](pics/BT_MidPost.png)
 - 常见的二叉树的类型
   - [对称二叉树](https://leetcode.cn/problems/symmetric-tree/)
   - [平衡二叉树](https://leetcode.cn/problems/balanced-binary-tree/)
