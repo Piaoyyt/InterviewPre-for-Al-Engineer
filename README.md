@@ -4,7 +4,7 @@
 
 ## Main content
 ### 1.[Deep Learning](./static/DL.md)  
-### 2.Machine Learning  
+### 2.[Machine Learning](./static/ML.md)  
 ### 3.[Algorithm problems](./static/AlgorithmP.md)
 ### 4.[Operating system](./static/OS.md)
 ### 5.[Recommendation system](./static/Recommendation.md)
