@@ -250,5 +250,56 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
 #### 4.Arcface（加性角度）
 > 在角度上做文章，同样也是使得在原来的角度下相似度会变低，即要么角度变大，要么是直接相似度变低(Cosface的做法)；这里是
 > 让角度变大，即加上一个角度的偏移。
+### 3.2问题的思考
+#### 1.人脸识别方法的总结
+人脸识别问题本质是一个分类问题，即每一个人作为一类进行分类检测，但实际应用过程中会出现很多问题。第一，人脸类别很多，如果要识别一个城镇的所有人，那么分类类别就将近十万以上的类别，另外每一个人之间可获得的标注样本很少，会出现很多长尾数据。根据上述问题，要对传统的CNN分类网络进行修改。
 
+我们知道深度卷积网络虽然作为一种黑盒模型，但是能够通过数据训练的方式去表征图片或者物体的特征。因此人脸识别算法可以通过卷积网络提取出大量的人脸特征向量，然后根据相似度判断与底库比较完成人脸的识别过程，因此算法网络能不能对不同的人脸生成不同的特征，对同一人脸生成相似的特征，将是这类embedding任务的重点，也就是怎么样能够最大化类间距离以及最小化类内距离。
+
+在人脸识别中，主干网络可以利用各种卷积神经网络完成特征提取的工作，例如resnet，inception等等经典的卷积神经网络作为backbone，关键在于最后一层loss function的设计和实现。现在从两个思路分析一下基于深度学习的人脸识别算法中各种损失函数。
+
+思路1：metric learning，包括contrastive loss, triplet loss以及sampling method
+
+思路2：margin based classification，包括softmax with center loss, sphereface, normface, AM-sofrmax(cosface) 和arcface。
+
+- Metric Learning
+  - Contrastive loss
+    >深度学习中最先应用metric learning思想之一的便是DeepID2了。其中DeepID2最主要的改进是同一个网络同时训练verification和classification（有两个监督信号）。其中在verification loss的特征层中引入了contrastive loss。Contrastive loss不仅考虑了相同类别的距离最小化，也同时考虑了不同类别的距离最大化，通过充分运用训练样本的label
+      信息提升人脸识别的准确性。因此，该loss函数本质上使得同一个人的照片在特征空间距离足够近，不同人在特征空间里相距足够远直到超过某个阈值。(听起来和triplet loss有点像)。
+      ![](pics/ContrastiveLoss.jpg)
+  - Triplet loss
+    >Google在DeepID2的基础上，抛弃了分类层即Classification Loss，将Contrastive Loss改进为Triplet loss，只为了一个目的：学习到更好的feature。
+直接贴出Triplet loss的损失函数，其输入的不再是Image Pair，而是三张图片(Triplet)，分别为Anchor Face, Negative Face和Positive Face。Anchor与Positive Face为同一人，与Negative Face为不同的人。那么Triplet loss的损失函数即可表示为：
+      ![](pics/TripletLoss.jpg)
+     本质上是使得anchor和postive的图像对映射得到的特征距离尽可能的小，anchor与negative的图像对映射得到的特征距离尽可能的大。
+- 存在的不足：
+  - 模型训练依赖大量的数据，拟合过程很慢。由于contrastive loss和triplet loss都是基于pair或者triplet的，需要准备大量的正负样本，，训练很长时间都不可能完全遍历所有可能的样本间组合。网上有博客说10000人、500000张左右的亚洲数据集上花一个月才能完成拟合。
+  - Sample方式影响模型的训练。比如对于triplet loss来说，在训练过程中要随机的采样anchor face, negative face以及positive face，好的样本采样能够加快训练速度和模型收敛，但是在随机抽取的过程中很难做到非常好。
+  - 缺少对hard triplets的挖掘，这也是大多数模型训练的问题。比如说在人脸识别领域中，hard negatives表示相似但不同的人，而hard positive表示同一个人但完全不同的姿态、表情等等。而对hard example进行学习和特殊处理对于提高识别模型的精度至关重要。
+- 对此做的改进
+  - finetune
+    > 不再是直接用三元组来训练人脸识别网络，而是先用softmax训练人脸识别模型，然后再将顶层的分类层去掉，换成triplet层，相当于对特征进行校正，加快了速度。
+  - 损失函数做的改进（引进对hard sample的挖掘，使得模型得到更具判别性的特征）
+    > 对于batch中的每一张图片a，我们可以挑选一个最难的正样本和一个最难的负样本和a组成一个三元组。首先我们定义和a为相同ID的图片集为A，剩下不同ID的图片图片集为B，则TriHard损失表示为：
+     ![](pics/LosswithHardSample.jpg)
+    损失函数的另一形式也可表示为：
+     ![](pics/LosswithHardSample2.jpg)
+     我们知道，contrastive loss和triplet分别是利用二元组和三元组的信息，并且没有考虑难样本的挖掘，针对此，有一种lifted structure feature embedding的方式被提出：
+     ![](pics/ContrastTripletLiftedloss.jpg)
+    作者在此基础上给出了一个结构化的损失函数。如下图所示:
+     ![](pics/StructedLoss.jpg)
+    通过这种方式，让类间最大距离（难样本）尽可能的小，同时使得类间最小的距离尽可能的大。
+     ![](pics/StructedSimilarity.jpg)
+    上面的损失函数解决了难样本挖掘的问题，但是对于非常难的负样本，通常损失会非常的平滑，也就导致模型不能很好的学习到有效的信息，这时候可以加入自适应的损失，即提高那些比较难的
+    负样本对的损失，让模型能够充分挖掘这样难负样本对的有效信息。  
+     ![](pics/HardSampleLoss.jpg)  
+     上面的beta即是来判断样本难易程度的阈值，对于同类的样本对，当然是在距离超过某一个值时判定为难，此时损失会增加；同理负样本对也一样。
+  - 对sample方式的改进
+    > 作者的分析认为，sample应该在样本中进行均匀的采样，因此最佳的采样状态应该是在分散均匀的负样本中，既有hard，又有semi-hard，又有easy的样本,通过计算样本对的距离的分布的概率，
+     最后推出每一个距离下采样的比例，从而实现整个数据样本上的均匀采样。
+     ![](pics/SampleMethods.jpg)
+
+#### 1.人脸难样本问题
+
+#### 2.
 ## <a id=""></a>5.
