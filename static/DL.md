@@ -280,7 +280,7 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
   - finetune
     > 不再是直接用三元组来训练人脸识别网络，而是先用softmax训练人脸识别模型，然后再将顶层的分类层去掉，换成triplet层，相当于对特征进行校正，加快了速度。
   - 损失函数做的改进（引进对hard sample的挖掘，使得模型得到更具判别性的特征）
-    > 对于batch中的每一张图片a，我们可以挑选一个最难的正样本和一个最难的负样本和a组成一个三元组。首先我们定义和a为相同ID的图片集为A，剩下不同ID的图片图片集为B，则TriHard损失表示为：
+    > 对于batch中的每一张图片a，我们可以挑选一个最难的正样本和一个最难的负样本和a组成一个三元组。首先我们定义和a为相同ID的图片集为A，剩下不同ID的图片图片集为B，则TriHard损失表示为：  
      ![](pics/LosswithHardSample.jpg)  
     损失函数的另一形式也可表示为：
      ![](pics/LosswithHardSample2.jpg)  
@@ -298,6 +298,22 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
     > 作者的分析认为，sample应该在样本中进行均匀的采样，因此最佳的采样状态应该是在分散均匀的负样本中，既有hard，又有semi-hard，又有easy的样本,通过计算样本对的距离的分布的概率，
      最后推出每一个距离下采样的比例，从而实现整个数据样本上的均匀采样。
      ![](pics/SampleMethods.jpg)
+- Margin based
+  > 所谓的margin based就是在margin也就是特征的角度层面进行改进，迫使类内特征更加紧凑，类间特征更加分散。
+  - Center Loss
+    > 在softmax的基础上加上样本特征距离类中心的距离:
+     ![](pics/CenterLoss.jpg)
+  - L-Softmax
+    > 对于类内的样本特征角度乘上一个常数，从而使得类内的样本特征间距更加紧凑，本来夹角是10度的人脸特征对可能
+    就已经够了，加入了这样一个常数后，假如是2，那么相同的条件下就会限制样本特征角度为5度。
+     ![](pics/L-softmaxLoss.jpg)
+     ![](pics/L-softmaxLoss2.jpg)
+    但是这里没有对w进行归一化，即没有考虑到特征的模值带来的影响。
+  - Normface
+    > 在传统的softmax基础上对样本的特征和参数进行了归一化。
+     ![](pics/Normface.jpg)
+  - AM-softmax(CosFace、Sphereface、Arcface)
+    > 综合了前面的特征归一化以及大间隔的损失函数特点进行的改进，改进的方向分别为在余弦值上、乘性角度、加性角度上。
 
 #### 1.人脸难样本问题
 
