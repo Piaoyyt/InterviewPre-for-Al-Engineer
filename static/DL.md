@@ -281,18 +281,18 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
     > 不再是直接用三元组来训练人脸识别网络，而是先用softmax训练人脸识别模型，然后再将顶层的分类层去掉，换成triplet层，相当于对特征进行校正，加快了速度。
   - 损失函数做的改进（引进对hard sample的挖掘，使得模型得到更具判别性的特征）
     > 对于batch中的每一张图片a，我们可以挑选一个最难的正样本和一个最难的负样本和a组成一个三元组。首先我们定义和a为相同ID的图片集为A，剩下不同ID的图片图片集为B，则TriHard损失表示为：
-     ![](pics/LosswithHardSample.jpg)
+     ![](pics/LosswithHardSample.jpg)  
     损失函数的另一形式也可表示为：
-     ![](pics/LosswithHardSample2.jpg)
+     ![](pics/LosswithHardSample2.jpg)  
      我们知道，contrastive loss和triplet分别是利用二元组和三元组的信息，并且没有考虑难样本的挖掘，针对此，有一种lifted structure feature embedding的方式被提出：
-     ![](pics/ContrastTripletLiftedloss.jpg)
+     ![](pics/ContrastTripletLiftedloss.jpg)  
     作者在此基础上给出了一个结构化的损失函数。如下图所示:
-     ![](pics/StructedLoss.jpg)
+     ![](pics/StructedLoss.jpg)  
     通过这种方式，让类间最大距离（难样本）尽可能的小，同时使得类间最小的距离尽可能的大。
-     ![](pics/StructedSimilarity.jpg)
+     ![](pics/StructedSimilarity.jpg)  
     上面的损失函数解决了难样本挖掘的问题，但是对于非常难的负样本，通常损失会非常的平滑，也就导致模型不能很好的学习到有效的信息，这时候可以加入自适应的损失，即提高那些比较难的
     负样本对的损失，让模型能够充分挖掘这样难负样本对的有效信息。  
-     ![](pics/HardSampleLoss.jpg)  
+     ![](pics/HardSampleLoss.jpg)    
      上面的beta即是来判断样本难易程度的阈值，对于同类的样本对，当然是在距离超过某一个值时判定为难，此时损失会增加；同理负样本对也一样。
   - 对sample方式的改进
     > 作者的分析认为，sample应该在样本中进行均匀的采样，因此最佳的采样状态应该是在分散均匀的负样本中，既有hard，又有semi-hard，又有easy的样本,通过计算样本对的距离的分布的概率，
