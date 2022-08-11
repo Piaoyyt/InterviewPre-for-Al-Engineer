@@ -11,18 +11,6 @@
    - [归一化层](#NormalizeLaryer)
    - [注意力机制](#Attention)
 - [2.深度网络模型](#NetModel)
-- [3.目标检测](#ObjectDetection)
-   - [3.1经典方法](#ClassicalMethod)
-   - [3.2常见问题](#CommonProblems)
-   - [3.3前沿方法](#FrontierPaper)
-- [4.人脸识别](#FaceRecognition)
-   - [4.1经典方法](#FRClassicalMethod)
-   - [4.2常见问题](#ClassicalQuestion)
-   - [4.3]()
-- [5.人脸质量评价]
-
-- [6.质量评价]
-- [7.美学质量评价]
 
 ## <a id="BasicC"></a>1.基本的概念
 
