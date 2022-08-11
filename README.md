@@ -11,3 +11,4 @@
 ### 6.[Image Signal Process](./static/ISP.md)
 
 ### 7.[Python高级语法](./static/Python.md)
+### 8.[C++核心知识点](./static/C++.md)
