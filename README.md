@@ -12,3 +12,5 @@
 
 ### 7.[Python高级语法](./static/Python.md)
 ### 8.[C++核心知识点](./static/C++.md)
+
+### 9.[具体研究领域](./static/FieldsResearch.md)
