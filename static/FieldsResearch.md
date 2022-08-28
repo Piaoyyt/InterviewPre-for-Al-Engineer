@@ -249,6 +249,8 @@ AI技术的发展，大量自动化的机器识别技术已经在各个场景得
 - RAPID: Rating Pictorial Aesthetics using Deep Learning (ACM MM2014)
     > 这应该算是最早使用深度学习做美学评分的论文了。在图像美学中，图片的整体布局 (global) 和细节内容 (local) 都是需要考虑的因素。为了让网络能同时捕获这些信息，这篇论文除了将整张图片 (global) 
 输入网络外，还从图片中随机抠出很多 patch (local) 输入网络，然后将二者的信息结合起来进行分类。
+
+                                                                        
 ## <a id="ObjectDetection"></a>4.目标检测篇
 ### <a id="ClassicalMethod"></a>4.1经典方法
 - Two-stage
