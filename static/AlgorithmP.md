@@ -168,12 +168,224 @@
 > 图可以分为有向无向以及有环无环几种情况，其中树就属于一种有根的有向无环图，对于图的问题，关键就是将顶点和边的信息记录下来，
 然后根据顶点和边来去对所要求解的问题进行拆解。
 
-
+- 表示方法
+    > 图可以用邻接矩阵和邻接表表示，两者的差别就是邻接矩阵的大小是N * N即关于顶点的平方线性相关，和边数量无关系，而邻接表的
+存储空间和边的数量相关，对于无向和有向，可以用出度和入度来表示即可。
+- 最小生成树问题
+    > 我们知道树是一种特殊的结构，树必须满足有向无环，因为树都有一个根结点，并且任意一个结点只能有一个父结点，但是一个结点可以
+有多个子结点，所有满足树必须满足无环、无多父结点，这就导致了N个结点的树一定有N-1条边。  
+    > 而最小生成树就是将一个无向有权图转换成一个树（有向无环，这里的有向是因为存在根结点的情况）的过程，所谓的最小就是指的是这个
+树所有边的权值和最小，所以该类问题一定是针对于带权的图来说的。
+    - Prime算法（按顶点考虑）
+    > 首先随机选择一个点加入到生成树里面，并用一个数组记录其它所有点加入到生成树的代价，然后开始迭代：每一次从非生成树的点里面去找
+离生成树最小代价的点，然后选择其作为新点加入到生成树里面，同时更新其它点到生成树的代价（因为引入了新点）。【迭代直至所有点加入到生成树】                                                                                                                                                                                                                                                      
+    - Kruskal算法（按边考虑）
+    > 统计出图里面所有的边信息，然后按照边的大小进行排序，然后开始迭代：每一次选出当前最小的边和其对应的两个顶点，然后判断两个点是否在
+生成树里面（用并查集的思想去判断），如果不在，加入到生成树里面，否则直接跳过。
+- 最短路径问题
+    > 所谓的最短路径问题是经常考察的点，从最简单的单源到单目标点的最短路径、单源到其它所有点的路径问题、各顶点间的最短路径问题。
+    - 单源最短路径问题（BFS、Dijkstra）
+    > 对于无权图或者所有边的权值都相等，典型的如最短步数问题，因为从一个点到另一个点的代价总是1，这种问题直接每一次BFS，更新代价同时将所有的邻接点
+赋予相应的步数即可，每一个点只需要访问一次即可，因为这时候不存在a-b-c比a-c更少代价的情况发生；但是对于有权图来说，就不能简单的访问一次了，
+需要每一次BFS的时候选出最短的一个，需要用两个额外的数组来记录源点到各个点的最短距离以及源点到其它各个点的先驱点（-1代表直接到达），这个最短的可以直接截止了，但是其它的点还需要求，
+在得到最短的点之后，同时更新源点到其它的还未求得的点的距离（存在a-b-c比a-c更小代价的可能，存在的话直接更新先驱和最短距离），如此迭代下去，时间
+复杂度N方，N为顶点个数（Dijkstra算法，但是不适用于有负权值的情况，因为a-b 比 a-c大，但是可能a-b-c 比 a-c小）。
+     - 各顶点间的距离
+     > 思想和Dijkstra类似，因为这里是统计各个顶点之间的最短距离，所以就需要用到二维数组了，一个二维数组来表示u到v的最短距离，另一个二维数组来表示u到v的前驱点，
+由于有N方这么多可能的边，所以每一次需要对这么边进行更新，同时外面的大循环是遍历每一个中转站，即u-k-v里面的k,即总的时间N^3。
 ### 1.7堆
-### 1.8并查集
-### 1.9线段树
-### 1.10单调栈
+> 堆是一种带有优先级的树形结构，堆的顶端代表了最小或者最大值的情况，堆的实现通常用数组来实现即可。堆的关键在于堆的构建，而构建堆时需要用到的就是下沉和上浮操作，
+上浮即与父结点比较，下沉则与子结点比较，在构建的时候，如果用下沉的话，直接从最后一个非叶子结点进行下沉，然后逐个往前执行下沉操作即可，如果时上浮那么就需要最后一个
+结点上浮，两者用的场景也有点不同，在插入新元素到堆的末尾时，通过上浮，因为没有子结点；而新元素在堆顶时就通过下沉更新即可。  
+下面是上浮和下沉的简单实现：
+``` python
+  heapArray = [0 for i in range(N + 1)]
 
+def shiftUp(cur, N):
+    '''
+     从堆cur结点开始往上进行上浮,保证单个结点的有序就可，默认其它不用考虑
+    :param cur:
+    :param N:
+    :return:
+    '''
+
+    fatherN = cur // 2
+    if fatherN == 0 or heapArray[fatherN] >= heapArray[cur]:
+        return
+    else:
+        heapArray[fatherN], heapArray[cur] = heapArray[cur], heapArray[fatherN]
+        shiftUp(fatherN, N)
+def shiftDown(cur, N):
+    '''
+    从cur结点开始往下下沉
+    :param cur:
+    :param N:
+    :return:
+    '''
+    if cur > N:
+        return
+    left, right = cur << 1, cur << 1 + 1
+    exchange = None
+    pivot = heapArray[cur]
+    if left < N and heapArray[left] > pivot:
+        exchange = left
+        pivot = heapArray[left]
+    if right < N and heapArray[right] > pivot:
+        exchange = right
+    if not exchange:
+        heapArray[exchange], heapArray[cur] = heapArray[cur], heapArray[exchange]
+        shiftUp(exchange, N)
+```
+### 1.8并查集
+> 并查集是一种表示不同集合之间关系的结构，在实际的问题里面常常需要考虑不同结点的联系，并根据条件去更新关系，满足某些条件的点将会被归属到一类
+即一个集合里面，即并；查询各个点所属的集合，即查；通常用结点的父结点来去表示每一个结点所属的集合，这时候有几种表示的思路：1.用结点最近的父表示
+其所属的集合，查询的时候很快，但是这样在合并的时候，需要遍历所有的点（将所有和待合并的点属于同一个集合的点进行合并，即更新），时间复杂度就是N了；2.用结点最顶
+端的父结点表示所属的集合，这样查询的时候比较慢（需要递归到父才会停止，所以通常用边递归边更新的方式，下一次查就很快），但是合并时很快，只需要将待合并的去更新
+即可，总的时间为结点构成的高度h，即递归的时间。
+```python
+class UnionFind:
+
+    def __init__(self, size) -> None:
+        self.size_dict = [1 for i in range(size)]#结点的高度
+        self.father_dict = [i for i in range(size)]
+    #查找
+    def find(self, x):
+        #到达顶结点否
+        if x == self.father_dict[x]:
+            return x
+        #递归调用
+        ans = self.find(self.father_dict[x])
+        self.father_dict[x] = ans
+        return ans
+    #合并
+    def union(self, x, y):
+        x_father = self.find(x)
+        y_father = self.find(y)
+        if x_father != y_father:
+            #按照size去合并
+            if self.size_dict[x_father] > self.size_dict[y_father]:
+                self.father_dict[y_father] = x_father
+            elif self.size_dict[x_father] < self.size_dict[y_father]:
+                self.father_dict[x_father] = y_father
+            else:
+                self.father_dict[y_father] = x_father
+                self.size_dict[x_father] += 1#+1表示两个相同高度的进行合并，肯定使得最后新的集合高度+1
+    def isConnected(self, x, y):
+        return self.find(x) == self.find(y)
+```
+
+### 1.9线段树
+> 线段树是用树来对区间问题进行快速查找和更新的一种结构，适用于那些区间解可以由子区间的解合并得到的问题，比如区间1到区间10的
+最大值可以由区间1到区间5的最大值和区间6到区间10的最大值得到这种，并且用树的叶子结点来去保存各个点的值，即每一个位置的值。
+线段树的核心就是：构建过程、查询过程、更新过程，现在简单介绍一下这几个过程。
+- 构建
+     > 从树的根结点（代表了整个区间的信息）开始，往下构建左右子树，左子树代表左半区间的信息，右半区间右半区间的信息，递归进行构建，当碰到的
+区间为单独的点的时候，即递归的终止，并且当前结点的信息需要将左右构建完之后才能建立。
+- 查询
+     > 查询某个区间的时候，无非就存在几种情况，当前待查询区间和当前结点的区间无重合部分（直接返回None）、当前待查询区间包含了当前结点的区间（直接
+返回该结点保存的值）、当前待查询的区间被包含当前结点的区间（往结点的左右子结点去查找，左右子的区间会变小，同时将找到的返回并进行比较）。
+- 更新
+     > 更新无非是更新单个结点的值，找到结点对应树的位置比较容易，通过区间然后二分查找即可；找到之后对叶子结点的值进行更改，更改完之后还需要对沿途上
+的区间进行更改，所以区间更改是在子结点更改完之后才进行的。
+```python
+class Node:
+    def __init__(self, l, r, val):
+        '''
+        :param l: 区间的左端点
+        :param r: 区间的右端点
+        :param val: 区间的值
+        '''
+        self.l = l
+        self.r = r
+        self.val = val
+    def __str__(self):
+        if self.l != self.r:
+            return f'当前结点的区间为[{self.l}, {self.r}], 值:{self.val}'
+        else:
+            return f'当前结点为叶子结点{self.l}, 值:{self.val}'
+
+def func(x, y):
+    if not x and not y: return None
+    if not x: return y
+    if not y: return x
+    return max(x, y)
+class SegmentTree:
+
+    def __init__(self, nums_array):
+        self.tree = [None for i in range(2 * len(nums_array) + 2)]
+        #self.val_hash = {val: i for i, val in enumerate(nums_array)}
+        self.leaf_val = nums_array[:]
+        self.func = func#自定义的函数，这里定义为求各个区间的最大值问题
+    def build(self, cur, l, r):
+        '''
+        构建区间lr的线段树，
+        :param cur: 区间所在的树的索引,构建一般都是从0开始构建
+        :param l:
+        :param r:
+        :return:
+        '''
+        if l == r:
+            self.tree[cur] = Node(l, r, self.leaf_val[l])
+
+            return
+
+        m = (l + r) // 2
+        #构建左右子树
+        self.build((cur << 1) + 1, l, m)
+        self.build((cur << 1) + 2, m + 1, r)
+        #根据左右子树结点代表的区间的值更新当前大区间的值
+        self.tree[cur] = Node(l, r, self.func(self.tree[(cur << 1) + 1].val, self.tree[(cur << 1) + 2].val))
+    def query(self, cur, ql, qr):
+        '''
+        :param cur: 树的结点索引，一般都是为0代表从根结点开始查询
+        :param ql: 待查询的左
+        :param qr: 待查询的右
+        :return:
+        '''
+        #当前树结点
+        cur_node = self.tree[cur]
+        #如果当前树结点的区间和待查询的不相交，说明查询无效
+        if ql > cur_node.r or qr < cur_node.l:
+            return None
+        # 如果当前树结点的区间在待查询的里面，直接返回区间的值
+        if cur_node.l >= ql and cur_node.r <= qr:
+            return cur_node.val
+        lQuery = self.query((cur << 1) + 1, ql, qr)
+        rQuery = self.query((cur << 1) + 2, ql, qr)
+        return self.func(lQuery, rQuery)
+    def updatePoint(self, cur, node_id, updata_val):
+        curN = self.tree[cur]
+        if curN.l == curN.r:#如果是叶子结点判断值是否相同
+            if  curN.l == node_id:
+                curN.val += updata_val
+                self.leaf_val[node_id] += updata_val
+                return
+        mid = (curN.l + curN.r) // 2
+        if mid >= node_id:
+            self.updatePoint((cur << 1) + 1, node_id, updata_val)
+        else:
+            self.updatePoint((cur << 1) + 2, node_id, updata_val)
+        #更新区间的值
+        curN.val = func(self.tree[(cur << 1) + 1].val, self.tree[(cur << 1) + 2].val)
+    def __str__(self):
+        queue = [0]
+        while queue:
+            for i in range(len(queue)):
+                cur = queue.pop(0)
+                #print(cur)
+                print(self.tree[cur])
+                #判断当前是否为叶子，是的话说明没有叶子了，不需要加进去
+                if self.tree[cur].l != self.tree[cur].r:
+                    queue.append((cur << 1) + 1)
+                    queue.append((cur << 1) + 2)
+```
+### 1.10字典树
+> 字典树，也称为前缀树，主要用来查询作用的，即可以看作是一个字典，保存的是单词的前缀信息，即各个位置的信息，比如word插入到字典树里面，
+就是'w'→'o'→'r'→'d'，用python实现其实就很容易，其实就是dict，当然也可用数组去存储，将字符转换成对应的位置即可。
+### 1.11单调栈
+> 单调栈属于一种单调递增的栈，即栈里面存储的值是单调的，在解题用的比较多，典型的就是接雨水的问题。
+### 1.12有限状态机
+> 用观测状态、隐状态的思想，去把每一个可能的状态以及该状态下的转移方向建模出来，然后按照给的序列依次转移即可。
 ## <a id = 'Solve_ideas'></a> 2.解题思路篇
 
 ### 2.1双指针
@@ -259,3 +471,82 @@
 > 运用概率论的知识对问题进行分析来设定状态以及状态转移方程。
 - [锦标赛](https://www.notion.so/b3637c19e8f34c8bb32ecce5b5bd10c5#4f251640025944d0ad24dedebd412608)
 #### 8.博弈dp问题
+
+## <a id = 'CalucatingProgress'></a> 3.常考的计算过程和典型的算法
+
+- 计算质因子
+    > 质数（素数Prime）即除了1和它本身没有其它因子的数，典型的是2，3，5，等，如何快速的求一个数所有的质因子，可以
+对一个数从2开始除，如果除的开，就一直除，直到除不开就用下一个数去除，比如3，到了4的时候比不可能除开，因为4是2的倍数，
+所以按照这个逻辑，能除开的全是原数的质因子。
+    ```python
+    import collections
+    def getPrimefactors(num):
+        '''
+        获取数num的质因子分解结果
+        :param num:
+        :return:
+        '''
+        #负数或为1
+        if num <= 1:
+            return False
+        primefactorsMap = collections.OrderedDict()
+        for denominator in range(2, int(num ** 0.5) + 3):
+            while num % denominator == 0:
+                primefactorsMap[denominator] = 1 + primefactorsMap.get(denominator, 0)
+                num = num // denominator
+        #对于很大的本身就是质数的，那么就会出现上面没有保存的情况
+        if num > 2:
+            primefactorsMap[num] = 1 + primefactorsMap.get(num, 0)
+        printAns = [f'{prime}^{power}'for prime,power in primefactorsMap.items()]
+        print('*'.join(printAns))
+        return primefactorsMap
+    getPrimefactors(27)
+    ```
+- 求两个数的最大公因数，即最大公约数
+    > 要求两个数的最大公因数，首先求出两个数的质因子分解结果，然后再找出公共的质因子，指数取较小的即可。
+    ```python
+    def getMaxCommonfactor(num1, num2):
+        if num1 == 1 or num2 == 1:
+            return num2 if num1 == 1 else num1
+        #获取两个数的质因子分解结果
+        num1Primesfactors = getPrimefactors(num1)
+        num2Primesfactors = getPrimefactors(num2)
+        ans = 1
+        #找公共部分
+        for prime in num1Primesfactors:
+            if prime in num2Primesfactors:
+                ans *= prime ** min(num1Primesfactors[prime], num2Primesfactors[prime])
+        return ans
+    ```
+    > 同时求最小公倍数还可以用辗转相除法，即将一个数不断的除以另一个数，同时将余数作为新的被除数，直到取余为0返回即可。
+    ```python
+    def euclideanMaxCommonfactor(num1, num2):
+        '''
+        利用辗转相除法求最大公约数
+        :param num1:
+        :param num2:
+        :return:
+        '''
+        if num1 < num2:
+            num1, num2 = num2, num1
+        return num2 if num1 % num2 == 0 else euclideanMaxCommonfactor(num2, num1 % num2)
+    ```
+- 求两个数的最小公倍数
+     > 要求两个数的最小公倍数，其实会了前面两个的求法，可以很快的求解出来，即将两个数相乘然后除以最大公因数即可。
+    ```python
+    def getMinCommonMultiple(num1, num2, method = 'euclidean'):
+        '''
+        求两个数的最小公倍数
+        :param num1: 
+        :param num2: 
+        :param method: 'euclidean'代表使用辗转相除法，否则使用质因子分解的方法。
+        :return: 
+        '''
+        if method == 'euclidean':
+            maxCommonfactor = euclideanMaxCommonfactor(num1, num2)
+        else:
+            maxCommonfactor = getMaxCommonfactor(num1, num2)
+        ans = num1 * num2 // maxCommonfactor
+        return ans
+    ```
+     
