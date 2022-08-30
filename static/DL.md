@@ -48,7 +48,100 @@ SGD的全称为Stochastic Gradient Descent,即随机梯度下降，因为SGD里�
 > 该卷积是在实例分割里面被提出来的，以用于解决一般的卷积感受野不够大，但是提高卷积核大小又会降低
 输出的尺寸，并且增大参数量的缺点；因为实例分割要求最后的输出能够对原始图像里面的每个像素点都能够
 比较准确的感知。空洞卷积就是在原始的卷积核元素之间插0，变化后的卷积核大小为k + (d - 1) x (k - 1)。
+#### 6.卷积的代码实现
+- 不用numpy库的实现方式
+```python
+def convolution(img, kernel_size, padding, stride):
+    '''
+    对输入的图像计算卷积
+    :param img: 输入图像
+    :param kernel_size: 核大小
+    :param padding: 边界填充的大小
+    :param stride: 核移动的步长
+    :return:
+    当核所有的值 =  1 / (kernel_size)**2 的时候，且满足 2 * padding - kernel_size + 1 = 0 时就等效于中值滤波了，并且stride
+    只能为1，因为此时输出和输入等大；
+    其余情况则是普通的卷积运算
+    '''
+    #计算输出图像的大小，给核赋值
+    h, w, c = img.shape
+    kernel = [[[1/kernel_size**2 for i in range(kernel_size)] for j in range(kernel_size)] for k in range(c)]
+    outputh, outputw = (h + 2 * padding - kernel_size)//stride + 1, (w + 2 * padding - kernel_size)//stride + 1
+    outputC = c
+    #原始图像padding的范围，即置0的范围
+    padding_Hrange = [i for i in range(padding)] + [h + padding + i for i in range(padding)]
+    padding_Wrange = [i for i in range(padding)] + [w + padding + i for i in range(padding)]
+    output = [[[0 for i in range(outputw)] for j in range(outputh)] for k in range(outputC)]
+    for i in range(outputh):
+        for j in range(outputw):
+            #计算输出每一个位置的像素点对应的输入的起始行和列
+            h_s, w_s = i * stride, j * stride
+            #各个通道分别累乘
+            for c in range(outputC):
+                temp = 0
+                #输入图像的行和列，位于两端的为padding部分
+                for originR in range(h_s, h_s + kernel_size):
+                    for originC in range(w_s, w_s + kernel_size):
+                        #位于padding直接乘0即可
+                        if originR in padding_Hrange or originC in padding_Wrange:
+                            temp += 0
+                        #对应位置相乘
+                        else:
+                            #输入图像和核对应位置相乘
+                            temp += img[originR-padding, originC-padding, c] * kernel[c][originR - h_s][originC-w_s]
+                output[c][i][j] = temp
 
+    return output
+import numpy as np
+import cv2
+img = cv2.imread('./girl.jpg')
+print(img.shape)
+ans = convolution(img, kernel_size = 5, padding = 2, stride = 1)
+ans = np.array(ans).transpose(1, 2, 0)
+cv2.imwrite('medianFilter.jpg', ans)
+
+```
+用一张图像作为示例，处理前：  
+![](pics/girl.jpg)  
+经过中值之后：  
+![](pics/medianFilter.jpg)  
+- 利用numpy库的实现方式
+```python
+def convolution(img, kernel_size, padding, stride):
+    '''
+    对输入的图像计算卷积
+    :param img: 输入图像
+    :param kernel_size: 核大小
+    :param padding: 边界填充的大小
+    :param stride: 核移动的步长
+    :return:
+    当核所有的值 =  1 / (kernel_size)**2 的时候，且满足 2 * padding - kernel_size + 1 = 0 时就等效于中值滤波了，并且stride
+    只能为1，因为此时输出和输入等大；
+    其余情况则是普通的卷积运算
+    '''
+    #计算输出图像的大小，给核赋值
+    h, w, c = img.shape
+    kernel = np.ones((kernel_size, kernel_size, c))/(kernel_size ** 2)
+    outputh, outputw = (h + 2 * padding - kernel_size)//stride + 1, (w + 2 * padding - kernel_size)//stride + 1
+    outputC = c
+    #padding操作
+    img = np.pad(img, ((padding, padding), (padding, padding), (0, 0)))
+    #原始图像padding的范围，即置0的范围
+    output = np.random.randn(outputh, outputw, outputC)
+    for i in range(outputh):
+        for j in range(outputw):
+            #计算输出每一个位置的像素点对应的输入的起始行和列
+            h_s, w_s = i * stride, j * stride
+            #各个通道分别累乘
+            for c in range(outputC):
+                temp = 0
+                #输入图像的行和列，位于两端的为padding部分
+                for originR in range(h_s, h_s + kernel_size):
+                    for originC in range(w_s, w_s + kernel_size):
+                        temp += img[originR, originC, c] * kernel[originR - h_s, originC-w_s, c]
+                output[i, j, c] = temp
+    return output
+```
 ### <a id="Pooling"></a>1.3 池化层
 为了选取特征图区域内的显著特征，并降低特征的维度，通过池化整合特征。
 #### 1. 平均池化
