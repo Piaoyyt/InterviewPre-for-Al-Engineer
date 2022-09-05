@@ -401,7 +401,75 @@ AI技术的发展，大量自动化的机器识别技术已经在各个场景得
 去得到一个对特别难的样本进行抑制。  
 ![](pics/GHM1.png)  
 ![](pics/GHM2.png)  
+#### 4.手写一下NMS的实现
 
+```python
+'''
+NMS(非极大值抑制的实现）
+
+'''
+import  numpy as np
+def nms(dets, thresh):
+    '''
+    :param dets: 输入的检测框 [[x1, y1, x2, y2, confidence]]
+    :param thresh:
+    :return:
+    '''
+    #按照置信度得到从高到低的索引
+    confidence = dets[:, 4]
+    index_sorted = confidence.argsort()[::-1]
+    #初始化最终输出的框集合
+    ans = []
+    rest_boxes_index = index_sorted[:]
+    def calculattIOU(box, boxes):
+        '''
+        :param box:选择的框
+        :param boxes: 待比较的框
+        :return: 所有的IOU值
+        '''
+        boxes_num = boxes.shape[0]
+        boxes = boxes.reshape(boxes_num, 4)
+        box = box.reshape(1, 4)
+        box = np.tile(box, (boxes_num, 1)) #行上进行复制
+        gtx1 = box[:, 0]
+        gty1 = box[:, 1]
+        gtx2 = box[:, 2]
+        gty2 = box[:, 3]
+
+        boxesx1 = boxes[:, 0]
+        boxesy1 = boxes[:, 1]
+        boxesx2 = boxes[:, 2]
+        boxesy2 = boxes[:, 3]
+        #计算交
+        intersection_x1 = np.max(np.concatenate(gtx1, boxesx1, axis=1), axis = 1).reshape(boxes_num, 1)
+        intersection_y1 = np.max(np.concatenate(gty1, boxesy1, axis=1), axis=1).reshape(boxes_num, 1)
+        intersection_x2 = np.min(np.concatenate(gtx2, boxesx2, axis=1), axis=1).reshape(boxes_num, 1)
+        intersection_y2 = np.min(np.concatenate(gty2, boxesy2, axis=1), axis=1).reshape(boxes_num, 1)
+
+        intersection_area = np.clip(intersection_x2 - intersection_x1, a_min=0) * \
+                            np.clip(intersection_y2 - intersection_y1, a_min=0)
+        #计算并
+        union_area = (gtx2 - gtx1) * (gty2 - gty1) + (boxesx2 - boxesx1) * (boxesy2 - boxesy1)
+        ans = (intersection_area) / (union_area - intersection_area)
+        ans = ans.reshape(boxes_num, 1)
+        return ans
+    #开始从剩余的框里面计算和已经选择的框计算IOU，大于一定值的去掉，即不要
+    while len(rest_boxes_index) != 0:
+        # 选取最高置信度的放到框里面
+        cur = rest_boxes_index.pop(0)
+        ans.append(dets[cur, :])
+        #剩余框的集合为0，直接返回
+        if len(rest_boxes_index) == 0:
+            return ans
+        iou_result = calculattIOU(dets[cur, :], dets[rest_boxes_index[:], :])
+        #更新候选的框
+        box_delete_mask = (iou_result < thresh)
+        rest_boxes_index = rest_boxes_index[box_delete_mask]
+        if len(rest_boxes_index) == 0:
+            return ans
+    #返回
+    return ans
+```
 ### <a id="FrontierPaper"></a>4.3前沿思想
 - [yolox](https://zhuanlan.zhihu.com/p/392221567)
   > 1、Decoupled head(预测分支解耦):相比于yolov3到v5，其中的分类和回归都是共享一个特征，即非解耦的方式得到，yolox里面采用解耦的方式分别来预测
@@ -423,7 +491,7 @@ AI技术的发展，大量自动化的机器识别技术已经在各个场景得
 > 人脸识别即身份识别，高级语义信息提取的过程，整个人脸识别的流程大致可以分成人脸校正、人脸裁剪、人脸特征提取、人脸比对或者直接人脸识别（本质上也是人脸比对）。
 ### <a id="FRClassicalMethod"></a>5.1经典方法
 #### 1.FaceNet
-> 采用三元组的形式，即传入p、n、t三张人脸图像，让网络学习的特征表示使得p和t尽可能的近，使得n和t尽可能的远，所以这里采用的是三元损失。
+> 采用三元组的形式，即传入p、n、t三张人脸图像，让网络学习的特征表示使得p和t尽可能的近，使得n和t尽可能的远，所以这里采用的是三元损失，即triple loss。
 #### 2.VGGFace
 > 利用VGGNet来做的人脸识别工作，首先训练人脸分类器，然后对分类也就是最后的映射层进行三元组学习人脸表示。
 #### 3.Sphereface（乘性角度）
@@ -435,7 +503,7 @@ AI技术的发展，大量自动化的机器识别技术已经在各个场景得
 相当于更强了。
 #### 4.Arcface（加性角度）
 > 在角度上做文章，同样也是使得在原来的角度下相似度会变低，即要么角度变大，要么是直接相似度变低(Cosface的做法)；这里是
-> 让角度变大，即加上一个角度的偏移。
+> 让角度变大，即加上一个角度的偏移。  
 ###<a id = 'ClassicalQuestion'><a/> 5.2常见问题的思考
 #### 1.人脸识别方法的总结
 人脸识别问题本质是一个分类问题，即每一个人作为一类进行分类检测，但实际应用过程中会出现很多问题。第一，人脸类别很多，如果要识别一个城镇的所有人，那么分类类别就将近十万以上的类别，另外每一个人之间可获得的标注样本很少，会出现很多长尾数据。根据上述问题，要对传统的CNN分类网络进行修改。
@@ -446,7 +514,7 @@ AI技术的发展，大量自动化的机器识别技术已经在各个场景得
 
 思路1：metric learning，包括contrastive loss, triplet loss以及sampling method
 
-思路2：margin based classification，包括softmax with center loss, sphereface, normface, AM-sofrmax(cosface) 和arcface。
+思路2：margin based classification，包括softmax with center loss, sphereface, normface, AM-softmax(cosface) 和arcface。
 
 - Metric Learning
   - Contrastive loss
@@ -506,7 +574,20 @@ AI技术的发展，大量自动化的机器识别技术已经在各个场景得
 （loss大），Easy Sample就是好学的样本（loss小），在人脸图像里面难样本可以理解为那些相似但非同一个人脸id的图像或者
 不相似但是是同一个id的图像，通常是由于拍摄的环境影响的，人脸的角度、图像的噪声都会影响人脸特征的判别性，这样会让模型在
 训练的时候捕捉到了对判别无关紧要甚至是干扰项的噪声。
+#### 3.人脸识别损失函数的总结
+> 从一开始的基于分类的损失即softmax到angular softmax（即对特征和类中心的归一化操作使得人脸特征分布在一个超球面上）到angular
+margin softmax（个人理解就是对于角度进行不同形式的约束，有直接在余弦角度上，有直接在余弦值上的，典型的几个就是cosface、sphereface
+和arcface），还有一些center loss等损失函数。
 
+#### 4.人脸识别的测试指标和数据集的指标
+1. 混淆矩阵
+    > FAR、FRR、TAR、TRR，其中TAR也称为召回率
+2. 召回率、精确度、F1-score
+    召回率即同类人脸对里面被正确识别的比例；精确度即预测为同类里面正确的比例；F1-score是两者的综合。
+3. ROC曲线、AUC
+    ROC: 以FAR为横坐标、TAR为纵坐标的曲线，即假阳性和真阳性。AUC: ROC曲线下部分围成的面积，表示的是从样本里面拿出一对相同人脸和不同人脸
+相同人脸的分数大于不同人脸的概率，如果是0.5说明模型就是随机的，计算AUC可以根据所有正负样本对（M+N）的分数进行排序后的结果进行计算，为1
+说明模型结果最好。
 ## <a id = 'SemanticSegmentaiton'><a/>6. 语义分割
 
 > 语义分割不同于目标检测，语义分割是一种细粒度更精确的检测，即是像素级别的，而目标检测是对局部区域的检测，是对某一类
