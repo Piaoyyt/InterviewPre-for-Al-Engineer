@@ -532,7 +532,8 @@ class SegmentTree:
         return num2 if num1 % num2 == 0 else euclideanMaxCommonfactor(num2, num1 % num2)
     ```
 - 求两个数的最小公倍数
-     > 要求两个数的最小公倍数，其实会了前面两个的求法，可以很快的求解出来，即将两个数相乘然后除以最大公因数即可。
+     > 直接取两者中的最大的，然后逐个累加相乘即可，这样是一种比较暴力的；要求两个数的最小公倍数，其实会了前面两个的求法，可以很快的求解出来，
+即将两个数相乘然后除以最大公因数即可，这种比较高效。
     ```python
     def getMinCommonMultiple(num1, num2, method = 'euclidean'):
         '''
@@ -550,3 +551,54 @@ class SegmentTree:
         return ans
     ```
 - 匈牙利算法
+    > 所谓的匈牙利算法，是用来记算最佳的匹配对，即匹配问题的。
+```python
+import math
+'''
+素数伴侣
+    定义：和为素数称为素数伴侣
+    素数（质数）：除了1和本身没有其它的因子，因此所有的偶数都不是素数[除了2]，即素数伴侣
+    一定是奇偶对，不可能是奇奇或者偶偶，那么我们只需找到奇数数组和偶数数组里面能够构成最多的伴侣对即可.
+    对于两个数组odds和evens，如何找到最多的匹配对？
+        当我们遍历odds时，遍历到的元素为odd，我们会从evens里面去找能够满足的元素elem，如果不满足好办，直接下一个；如果满足的话，
+        不能简单的直接就将结果+1，因为该匹配的元素有可能不是最佳的素数伴侣对，我们想要的是尽可能多，如何
+        去保证多？那么可以这样去做：
+            当碰到匹配的时候，我们先将该匹配的元素elem标记为已经访问；然后继续去看除了这个元素还有没有别的能够满足的，
+            如果有满足的，那么
+'''
+def isPrime(num):
+    if num == 2:
+        return True
+    for i in range(2, int(math.sqrt(num) + 1)):
+        if num % i == 0:
+            return False
+    return True
+def match(evens_array, visit_array, match_array, odd):
+    '''
+    Args:
+        evens_array:偶数数组
+        visit_array:访问数组
+        match_array:存储偶数数组各个位置匹配的奇数，None即没有匹配值与其配对
+        odd:待匹配的奇数
+    '''
+    for index, elem in enumerate(evens_array):
+        #标记访问防止后面递归的时候死循环
+        if not visit_array[index] and isPrime(elem + odd):
+            visit_array[index] = True
+            #偶数数组当前位置还未参与配对，或者是已经配对过的元素还有别的位置可以匹配
+            if not match_array[index] or match(evens_array, visit_array, match_array, match_array[index]):
+                match_array[index] = odd
+                return True
+    return False
+                
+nums = [3,6]
+evens = [i for i in nums if not (i&1)]
+odds = [i for i in nums if (i&1)]
+match_index = [None for i in range(len(evens))]#存储各个偶数对应的奇数，初始None说明该位置暂时没有奇数匹配
+ans = 0
+for i in odds:#遍历奇数数组，目的是将尽可能多的奇数和偶数数组里面的元素匹配到
+    visit = [False for i in range(len(evens))]
+    if match(evens, visit, match_index, i):
+        ans +=1
+print(ans)
+```
