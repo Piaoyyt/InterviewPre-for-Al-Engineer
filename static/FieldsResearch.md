@@ -9,7 +9,6 @@
 - [5.人脸识别](#FaceRecognition)
    - [5.1经典方法](#FRClassicalMethod)
    - [5.2常见问题](#ClassicalQuestion)
-   - [5.3]()
 - [6.语义分割](#SemanticSegmentaiton) 
    - [6.1经典方法](#SSClassicalMethod)
    - [6.2常见问题](#TypicalQue)
@@ -328,7 +327,7 @@ AI技术的发展，大量自动化的机器识别技术已经在各个场景得
    4.模拟物体遮挡：随机的选择部分矩形区域、在特征图上dropblock。  
    5.CSP结构：主要由CBL(卷积、BN层、Leaky ReLu)和其它卷积构成，并且引入了residual操作，即一端接入CBL，另一端接入普通的卷积。  
    6.PAN结构:路径聚合网络结构，即在FPN里面增加了自下而上的结构。  
-   7.框的位置损失：CIOU Loss(只可以在)；框的类别损失：BCE Loss；框的置信度损失：BCE Loss。
+   7.框的位置损失：CIOU Loss(只可以在训练的时候使用，增加了)；框的类别损失：BCE Loss；框的置信度损失：BCE Loss。
   #### 6.Yolov5
   >1.网络结构增加了Focus操作，即切片操作；   
    2.自适应的锚框的计算，非预先默认的锚框，而是在训练过程中同步迭代，即根据锚框下的最佳召回率是否大于某个阈值来决定是否更新锚框，更新里面采用的
