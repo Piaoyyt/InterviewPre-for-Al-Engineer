@@ -7,6 +7,7 @@
 ### 2.[Machine Learning](./static/ML.md)  
 ### 3.[Algorithm problems](./static/AlgorithmP.md)
 ### 4.[Operating system](./static/OS.md)
+### 5.[Operating system](./static/OS.md)
 ### 5.[Recommendation system](./static/Recommendation.md)
 ### 6.[Image Signal Process](./static/ISP.md)
 
