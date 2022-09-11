@@ -7,11 +7,9 @@
 ### 2.[Machine Learning](./static/ML.md)  
 ### 3.[Algorithm problems](./static/AlgorithmP.md)
 ### 4.[Operating system](./static/OS.md)
-### 5.[Operating system](./static/OS.md)
-### 5.[Recommendation system](./static/Recommendation.md)
-### 6.[Image Signal Process](./static/ISP.md)
-
-### 7.[Python高级语法](./static/Python.md)
-### 8.[C++核心知识点](./static/C++.md)
-
-### 9.[具体研究领域](./static/FieldsResearch.md)
+### 5.[Computer Network](./static/Net.md)
+### 6.[Recommendation system](./static/Recommendation.md)
+### 7.[Image Signal Process](./static/ISP.md)
+### 8.[Python高级语法](./static/Python.md)
+### 9.[C++核心知识点](./static/C++.md)
+### 10.[具体研究领域](./static/FieldsResearch.md)
