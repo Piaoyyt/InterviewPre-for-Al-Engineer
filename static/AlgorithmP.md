@@ -552,54 +552,156 @@ class SegmentTree:
     ```
 - 匈牙利算法
     > 所谓的匈牙利算法，是用来记算最佳的匹配对，即匹配问题的。
-```python
-import math
-'''
-素数伴侣
-    定义：和为素数称为素数伴侣
-    素数（质数）：除了1和本身没有其它的因子，因此所有的偶数都不是素数[除了2]，即素数伴侣
-    一定是奇偶对，不可能是奇奇或者偶偶，那么我们只需找到奇数数组和偶数数组里面能够构成最多的伴侣对即可.
-    对于两个数组odds和evens，如何找到最多的匹配对？
-        当我们遍历odds时，遍历到的元素为odd，我们会从evens里面去找能够满足的元素elem，如果不满足好办，直接下一个；如果满足的话，
-        不能简单的直接就将结果+1，因为该匹配的元素有可能不是最佳的素数伴侣对，我们想要的是尽可能多，如何
-        去保证多？那么可以这样去做：
-            当碰到匹配的时候，我们先将该匹配的元素elem标记为已经访问；然后继续去看除了这个元素还有没有别的能够满足的，
-            如果有满足的，那么
-'''
-def isPrime(num):
-    if num == 2:
+    ```python
+    import math
+    '''
+    素数伴侣
+        定义：和为素数称为素数伴侣
+        素数（质数）：除了1和本身没有其它的因子，因此所有的偶数都不是素数[除了2]，即素数伴侣
+        一定是奇偶对，不可能是奇奇或者偶偶，那么我们只需找到奇数数组和偶数数组里面能够构成最多的伴侣对即可.
+        对于两个数组odds和evens，如何找到最多的匹配对？
+            当我们遍历odds时，遍历到的元素为odd，我们会从evens里面去找能够满足的元素elem，如果不满足好办，直接下一个；如果满足的话，
+            不能简单的直接就将结果+1，因为该匹配的元素有可能不是最佳的素数伴侣对，我们想要的是尽可能多，如何
+            去保证多？那么可以这样去做：
+                当碰到匹配的时候，我们先将该匹配的元素elem标记为已经访问；然后继续去看除了这个元素还有没有别的能够满足的，
+                如果有满足的，那么
+    '''
+    def isPrime(num):
+        if num == 2:
+            return True
+        for i in range(2, int(math.sqrt(num) + 1)):
+            if num % i == 0:
+                return False
         return True
-    for i in range(2, int(math.sqrt(num) + 1)):
-        if num % i == 0:
-            return False
-    return True
-def match(evens_array, visit_array, match_array, odd):
+    def match(evens_array, visit_array, match_array, odd):
+        '''
+        Args:
+            evens_array:偶数数组
+            visit_array:访问数组
+            match_array:存储偶数数组各个位置匹配的奇数，None即没有匹配值与其配对
+            odd:待匹配的奇数
+        '''
+        for index, elem in enumerate(evens_array):
+            #标记访问防止后面递归的时候死循环
+            if not visit_array[index] and isPrime(elem + odd):
+                visit_array[index] = True
+                #偶数数组当前位置还未参与配对，或者是已经配对过的元素还有别的位置可以匹配
+                if not match_array[index] or match(evens_array, visit_array, match_array, match_array[index]):
+                    match_array[index] = odd
+                    return True
+        return False
+                    
+    nums = [3,6]
+    evens = [i for i in nums if not (i&1)]
+    odds = [i for i in nums if (i&1)]
+    match_index = [None for i in range(len(evens))]#存储各个偶数对应的奇数，初始None说明该位置暂时没有奇数匹配
+    ans = 0
+    for i in odds:#遍历奇数数组，目的是将尽可能多的奇数和偶数数组里面的元素匹配到
+        visit = [False for i in range(len(evens))]
+        if match(evens, visit, match_index, i):
+            ans +=1
+    print(ans)
+    ```
+- KMP算法
+  > 字符串kmp匹配，关键在于明白next数组的含义，next每一个位置的意义是next[i]代表当用模式字符串p[i]位置和s[j]匹配失败的时候，这时候pattern下一个
+  > 指向应该指向哪里，所以next数组的第一个往往是设定一个flag，比如-1，代表pattern整体和j前移动，其它的位置的next数值可以根据前面的递推得到，利用的就是
+  > 前后缀的关系。
+  ```python
+  def buildNext(pattern):
     '''
-    Args:
-        evens_array:偶数数组
-        visit_array:访问数组
-        match_array:存储偶数数组各个位置匹配的奇数，None即没有匹配值与其配对
-        odd:待匹配的奇数
+    :param pattern:
+    :return: next 数组，表示模式字符串里面各个位置前面的最大公共真前后缀长度
     '''
-    for index, elem in enumerate(evens_array):
-        #标记访问防止后面递归的时候死循环
-        if not visit_array[index] and isPrime(elem + odd):
-            visit_array[index] = True
-            #偶数数组当前位置还未参与配对，或者是已经配对过的元素还有别的位置可以匹配
-            if not match_array[index] or match(evens_array, visit_array, match_array, match_array[index]):
-                match_array[index] = odd
-                return True
-    return False
-                
-nums = [3,6]
-evens = [i for i in nums if not (i&1)]
-odds = [i for i in nums if (i&1)]
-match_index = [None for i in range(len(evens))]#存储各个偶数对应的奇数，初始None说明该位置暂时没有奇数匹配
-ans = 0
-for i in odds:#遍历奇数数组，目的是将尽可能多的奇数和偶数数组里面的元素匹配到
-    visit = [False for i in range(len(evens))]
-    if match(evens, visit, match_index, i):
-        ans +=1
-print(ans)
-```
-
+    array = [0 for i in range(len(pattern) + 1)]
+    i = 0
+    array[0] = -1#这个-1是指的第一个字符不匹配时需要执行的操作，-1代表需要将模式字符和待匹配
+    #的向前移动一位
+    k = -1 #  最大公共真前后缀长度，初始为-1，即模式字符第一个位置的前后缀长度为-1，后面的需要
+    #根据前面位置的k值（即前后缀长度）来得到当前位置的前后缀长度。
+    while i < len(pattern):
+        '''
+        1.如果最大前后缀长度为-1，说明此时不存在前后缀长度相等，即此时需要跳到第一个位置也就是0
+    当前位置对应的next数组值初始化为0；
+        2.或者碰到满足i位置（这个i是滞后的i，即当前需要记录的位置前一个）和
+    k所对应的位置(k为滞后的i那个位置对应的前后缀长度，pattern[k]即pattern[0...k-1]
+        后一个)相同的情况，那么此时可以直接在前面的记录基础上进行更新当前位置的next位置。
+        '''
+        if k < 0 or pattern[i] == pattern[k]: 
+            k += 1
+            i += 1
+            array[i] = k
+        '''
+        碰到pattern[i] == pattern[k]不相等的情况，需要去找pattern[array[k]]所对应位置是否和
+    pattern[i]相等，相等的话只需要赋给pattern[i+1] = array[k] + 1即可。
+    '''
+        else: 
+                   k = array[k]
+    return array
+  def kmp_match(pattern, s):
+  
+      array_next = buildNext(pattern)
+  
+      i, j = 0, 0  #初始化模式字符和目标字符的指针位置
+      while i < len(s) and j < len(pattern): #
+          if j < 0 or s[i] == pattern[j]:
+              i += 1
+              j += 1
+          else:
+              j = array_next[j]
+      if j == len(needle):
+          return i - j
+      else:
+          return -1
+  
+  ```
+- Manacher算法
+  > 马拉车算法，即统计回文子串数量的时候用到的一种算法思想，由暴力计算以每一个字符为中心的最长回文子串长度到利用之前状态信息来更新当前字符的状态信息
+提高了计算的效率，核心点在于关键值的设定：当前最长回文子串的右边界rM，当前最长回文子串的中心位置c，利用当前位置和rM之间的相对位置，给当前位置一个起始
+的回文半径，而不需要都从1开始自增，优化了时间。
+  ```python
+  class Solution:
+    def countSubstrings(self, s: str) -> int:
+        '''
+        利用Manacher算法
+        '''
+        def transform(s: str) -> str:
+            ans = ['#']
+            for item in s:
+                ans.append(item)
+                ans.append('#')
+            ans.append('#')
+            return ''.join(ans)
+        ans = 0
+        s_t = transform(s)
+        l = len(s_t)
+        f = [1 for i in range(l)]#记录每一个位置的最大回文路径
+        c = 0#初始化回文的中心（第一个为0）
+        r_Max = 0#最大回文子串的右边界（第一个为0）
+        for i in range(1, l):
+            #初始化最大回文的路径
+            f[i] = 1 if i > r_Max else min(r_Max - i + 1, f[2*c - i])
+            #向两边扩展
+            while(i+f[i]<l and i-f[i]>-1 and s_t[i+f[i]] == s_t[i-f[i]]):
+                f[i]+=1
+            #更新最大的回文中心和右边界
+            if(i+f[i]-1>r_Max):
+                r_Max = i + f[i] -1
+                c = i
+            #根据每个位置的回文半径确定每个位置所拥有的子串个数
+            #如果是以'#'为中心，则半径必定为奇数，且半径与实际的对应关系为：   [1→0, 3→1, 5→2]
+            #如果是以s里面的字符为中心，则半径必定为偶数，对应关系为如下：     [2→1, 4→2, 6→3]
+            ans+=f[i]//2
+        return ans
+  ```
+- 快速幂运算
+  > 在求某个数的幂运算的时候，如果直接按照幂数的大小按个去乘，势必会导致时间过大，所以可以采用将指数分解，然后改变基数的形式去优化。
+  ``` python
+  def fastPower(base, power):
+      result = 1;
+      while power > 0:
+          if power & 1:
+              result = result * base
+          power >>= 1//此处等价于power=power/2
+          base = (base * base)
+      return result
+  ```
