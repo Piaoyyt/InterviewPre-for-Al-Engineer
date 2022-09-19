@@ -452,7 +452,7 @@ class SegmentTree:
               queue.append('null')         
           index += 1   
     ```
-  
+
 ### 2.3分治
 ### 2.4DFS和BFS
 > DFS即深度优先遍历，在图、树结构里面考察的较多，DFS一般都可以和BFS进行相互的转换。
