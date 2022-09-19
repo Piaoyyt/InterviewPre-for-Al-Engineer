@@ -389,10 +389,90 @@ class SegmentTree:
 ## <a id = 'Solve_ideas'></a> 2.解题思路篇
 
 ### 2.1双指针
-### 2.2回溯
+### 2.2递归、回溯
+
+> 递归是一种结构，即函数调用自身，而回溯则是一种思想，利用到了递归，通过设定一定的条件，当满足一定的条件时就结束递归提前
+终止，并且会将已经更新的状态回退到之前的状态，最典型的应用就是在求排列、组合时，在树的结构里面递归是最常见的。
+
+- 完全相同的子树  
+![](pics/SameSubTreesHW.jpg)  
+    对于这类题目，首先关键的是构建树，对于树的构建方式，一般会有两种方式，我们需要根据题目中给的树的排列形式，一种是比较
+常见的借助数组的方式，即给每一层的结点都表示出来，利用父子结点索引的关系去表示，没有的地方用None表示，这种表示方法不太好，因为当树的高度比较高，这时候就
+需要太多了None来表示了，对内存不友好；另一种表示方式就是，借助队列的方式去存储，对于每一层的结点，将其子结点入队，空的用一个
+符号标记即可，然后在出队的时候，对于空的就跳过就行，这样就避免了空的结点下面的结点还要占一个位置的情况。   
+![](pics/TreeSample.jpg)  
+    如这个树，按照第一种表示方式的话，就是[1, 2, 3, 1, null, 2, null, null, null, null, null, 1, null, null, null],很明显，需要的数组大小就是
+和树的高度的2次方成正比，不够简洁，按照这种方式去构建的树代码如下：  
+    ```python
+      class TreeNode:
+          def __init__(self, val, left = None, right=None):
+              self.v = val
+              self.left = left
+              self.right = right
+      def construct(i, length):
+          if not array[i] or i > length: return None
+          cur = TreeNode(array[i])
+          cur.left = construct(i * 2 + 1, length)
+          cur.right = construct(i * 2 + 2, length)
+          return cur
+      root = construct(0, len(array))
+    ```  
+    如果按照队列的方式去存储，那么就是[1, 2, 3, 1, null, 2, null, null, null, 1, null]，很明显需要的数组大小大大降低了，之和树的结点数目线性关系，按照这种方式
+来构建树的代码如下：
+    ```python
+      class TreeNode():
+          def __init__(self, val, left = None, right = None):
+              self.val = val
+              self.left = left
+              self.right = right
+      root = TreeNode(int(array[0]))
+      queue = [root]
+      index = 1
+      # 构建二叉树
+      while queue:
+          for i in range(len(queue)):
+              cur = queue.pop(0)
+          if index >= len(array):
+              continue
+          #说明该点为空，不需要对其保留子结点，直接跳过
+          if cur == 'null':
+              continue
+          #如果该索引对应的值非空，说明cur的点有左
+          if array[index]!= 'null':
+              cur.left = TreeNode(int(array[index]))
+              queue.append(cur.left)
+          else:
+              queue.append('null')
+          index += 1
+          #同理，非空说明有右
+          if array[index]!= 'null':
+              cur.right = TreeNode(int(array[index]))
+              queue.append(cur.left)
+          else:
+              queue.append('null')         
+          index += 1   
+    ```
+  
 ### 2.3分治
 ### 2.4DFS和BFS
+> DFS即深度优先遍历，在图、树结构里面考察的较多，DFS一般都可以和BFS进行相互的转换。
+
+#### 1.机试题
+- 按图找最近的路
+    > 这种一般都是单源点到指定点之间的最短路径问题，当点之间是无权的情况下比较简单，直接按照BFS即可，如果不是无权的情况下就需要参照Dijkstra算法来算，因为有权的话需要
+    考虑中转的情况。
+
 ### 2.5贪心
+> 贪心的核心在于由局部最优到全局最优，最后的解一定是最优解，但是有可能存在多条解路径。
+
+#### 1.机试题
+
+- 分配礼盒  
+![](pics/GiftBox.png)  
+
+
+
+
 ### 2.6动态规划
 > 动态规划的核心在于**通过之前的状态来得到当前的状态，关键在于状态的定义以及状态转移方程的设计**
 > ，不同于贪心里面局部最优可以过渡到全局最优，动态规划需要对于每一种状态都记录，有的是利用前
@@ -471,6 +551,15 @@ class SegmentTree:
 > 运用概率论的知识对问题进行分析来设定状态以及状态转移方程。
 - [锦标赛](https://www.notion.so/b3637c19e8f34c8bb32ecce5b5bd10c5#4f251640025944d0ad24dedebd412608)
 #### 8.博弈dp问题
+
+#### 9.机试题
+
+- 奇数区间的中位数之和
+![](pics/MidSum.jpg)  
+    > 典型的数组dp问题，要想求dp[i][j]，即求区间[i, j]里面所有奇数区间的中位数之和，可以分为两种情况来讨论，首先[i, j]是由奇数长度转移而来，
+即[i, j - 1]是奇数长度，那么这时候增加的j位置和i构不成奇数，只能和i右边的构成奇数区间，同时i只能和j左边的构成奇数区间，所以可以根据较小区间的状态
+转移得到；而当[i, j]是由偶数长度转移而来时，无非就是多了一个[i, j]的奇数区间，别的都一样。
+
 
 ## <a id = 'CalucatingProgress'></a> 3.常考的计算过程和典型的算法
 
@@ -608,35 +697,35 @@ class SegmentTree:
   > 前后缀的关系。
   ```python
   def buildNext(pattern):
-    '''
-    :param pattern:
-    :return: next 数组，表示模式字符串里面各个位置前面的最大公共真前后缀长度
-    '''
-    array = [0 for i in range(len(pattern) + 1)]
-    i = 0
-    array[0] = -1#这个-1是指的第一个字符不匹配时需要执行的操作，-1代表需要将模式字符和待匹配
-    #的向前移动一位
-    k = -1 #  最大公共真前后缀长度，初始为-1，即模式字符第一个位置的前后缀长度为-1，后面的需要
-    #根据前面位置的k值（即前后缀长度）来得到当前位置的前后缀长度。
-    while i < len(pattern):
-        '''
-        1.如果最大前后缀长度为-1，说明此时不存在前后缀长度相等，即此时需要跳到第一个位置也就是0
-    当前位置对应的next数组值初始化为0；
-        2.或者碰到满足i位置（这个i是滞后的i，即当前需要记录的位置前一个）和
-    k所对应的位置(k为滞后的i那个位置对应的前后缀长度，pattern[k]即pattern[0...k-1]
-        后一个)相同的情况，那么此时可以直接在前面的记录基础上进行更新当前位置的next位置。
-        '''
-        if k < 0 or pattern[i] == pattern[k]: 
-            k += 1
-            i += 1
-            array[i] = k
-        '''
-        碰到pattern[i] == pattern[k]不相等的情况，需要去找pattern[array[k]]所对应位置是否和
-    pattern[i]相等，相等的话只需要赋给pattern[i+1] = array[k] + 1即可。
-    '''
-        else: 
-                   k = array[k]
-    return array
+          '''
+          :param pattern:
+          :return: next 数组，表示模式字符串里面各个位置前面的最大公共真前后缀长度
+          '''
+          array = [0 for i in range(len(pattern) + 1)]
+          i = 0
+          array[0] = -1#这个-1是指的第一个字符不匹配时需要执行的操作，-1代表需要将模式字符和待匹配
+          #的向前移动一位
+          k = -1 #  最大公共真前后缀长度，初始为-1，即模式字符第一个位置的前后缀长度为-1，后面的需要
+          #根据前面位置的k值（即前后缀长度）来得到当前位置的前后缀长度。
+          while i < len(pattern):
+              '''
+              1.如果最大前后缀长度为-1，说明此时不存在前后缀长度相等，即此时需要跳到第一个位置也就是0
+        当前位置对应的next数组值初始化为0；
+              2.或者碰到满足i位置（这个i是滞后的i，即当前需要记录的位置前一个）和
+        k所对应的位置(k为滞后的i那个位置对应的前后缀长度，pattern[k]即pattern[0...k-1]
+              后一个)相同的情况，那么此时可以直接在前面的记录基础上进行更新当前位置的next位置。
+              '''
+              if k < 0 or pattern[i] == pattern[k]: 
+                  k += 1
+                  i += 1
+                  array[i] = k
+              '''
+              碰到pattern[i] == pattern[k]不相等的情况，需要去找pattern[array[k]]所对应位置是否和
+          pattern[i]相等，相等的话只需要赋给pattern[i+1] = array[k] + 1即可。
+              '''
+              else: 
+                         k = array[k]
+          return array
   def kmp_match(pattern, s):
   
       array_next = buildNext(pattern)
