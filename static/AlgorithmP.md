@@ -80,7 +80,89 @@
     - > 巧妙的利用到了快速排序的思想，在原始的快速排序里面，l定位大于基准的位置，r定位小于基准的位置，然后不断交换，
       定位的准则仅是根据值的大小，而这一题里面定位的准则变了一下，变成了 l + pivot < r + pivot，本质上，还是快速
       排序的思想。
-  - [对单链表进行快速排序？]()
+  - [对单链表进行快速排序和归并排序？]
+      > 对单链表进行快速排序和归并排序的整体思想是一致的，首先讨论归并排序，归并排序无非就是分治思想，先将数组分成只含有
+一个数的子数组，然后对相邻的子数组进行合并，所以关键就在于先分，再合并；同时单链表里面也是这样先递归的分，每一次分成一半，
+只不过链表分一半的方式比数组复杂，可通过快慢数组，确定一半之后，对这两半进行合并即可，合并也可以用递归的思想去做。而对于快速排序，
+有两种方式，一种是更换结点值的方式，等于更改了链表结点，即用一个结点一直往尾遍历，碰到小于基准的结点，就将值和基准后面的结点进行
+交换即可，，另一种是不更改，其实就是每一次对于该链表找出小于基准值的结点，大于基准值的结点，等于基准的结点，然后串起来即可。  
+    ![](pics/LinkQucikSort.png)  
+      ```python
+        class Solution:
+        """
+        @param: head: The head of linked list.
+        @return: You should return the head of the sorted linked list, using constant space complexity.
+        """
+        # 归并法
+        def sortList1(self, head):
+            # write your code here
+            if head is None or head.next is None:
+                return head
+            #快慢指针定位中点
+            pre = head
+            slow = head
+            fast = head
+            while fast is not None and fast.next is not None:
+               pre = slow
+               slow = slow.next
+               fast = fast.next.next
+            #将后部分和前面的分开
+            pre.next = None
+            #合并排序之后的子链表。
+            return self.merge(self.sortList(head), self.sortList(slow))
+
+        def merge(self, l1, l2):
+            if l1 is None:
+                return l2
+            if l2 is None:
+                return l1
+            if l1.val <= l2.val:
+                l1.next = self.merge(l1.next, l2)
+                return l1
+            else:
+                l2.next = self.merge(l1, l2.next)
+                return l2
+            # 快排法
+        def sortList2(self, head):
+            # write your code here
+            if head is None or head.next is None:
+                return head
+            pivot = head
+            p = pivot
+            l1 = ListNode(0)
+            l2 = ListNode(0)
+            s = l1
+            f = l2
+            tmp = head.next
+            while tmp is not None:
+                if tmp.val < pivot.val:
+                    s.next = tmp
+                    s = s.next
+                elif tmp.val == pivot.val:
+                    p.next = tmp
+                    p = p.next
+                else:
+                    f.next = tmp
+                    f = f.next
+                tmp = tmp.next
+            s.next = None
+            f.next = None
+            p.next = None
+            #对小的和大的继续递归排序
+            l3 = self.sortList2(l1.next)
+            l4 = self.sortList2(l2.next)
+            #串起来即可
+            if l3 is not None:
+                l5 = l3
+                while l5.next is not None:
+                    l5 = l5.next
+                l5.next = pivot
+                p.next = l4
+                return l3
+            else:
+                p.next = l4
+            return pivot
+      ```
 - 子数组、子序列问题
   > 一般是求给的数组里面满足某一条件的子数组或者子序列的个数，常常需要结合dp去做，即需要用额外的空间来记录之前的
   > 状态，有时候用来记录状态的结构可以是数组，也可以是哈希表（常在前缀后缀里用到），同时状态的定义不一定就直接是题目
