@@ -333,6 +333,64 @@ Adaptive：自适应这里的含义是，对于每一次学习器的训练，都
    - 计算各个样本离这K个类中心的距离，选择最近的作为该样本的类。
    - 对这K个类子集的样本算均值，均值作为该类子集的新的中心。
    - 一直迭代直到满足新中心和旧中心的差别小于某个阈值就停止
+   - 源码
+     ```python
+        '''
+
+        K-means ：无监督聚类算法
+        '''
+        import numpy as np
+        import matplotlib.pyplot as plt
+        def get_data(sample_nums, dim):
+            '''
+            生成无监督的数据
+    
+            '''
+            x = np.random.randn(sample_nums, dim)
+            # c = np.zeros([sample_nums, 1])
+            return x
+        def kmeans(data_x, k):
+            """
+        
+            """
+            #load the data
+            n, d = data_x.shape
+            categories = np.zeros(n)
+            centers = np.random.randn(k, d)
+            centers_old = centers.copy()
+            lr = 0.5
+                #visualize the data
+            plt.scatter(data_x[:, 0], data_x[:, 1], c =categories)
+            plt.show()
+            variations = 1
+            while variations > 0.000001:
+                #update the class for each sample according the distance with the center
+                for i in range(n):
+                    distance_min = float('inf')
+                for j in range(k):
+                    distance = np.linalg.norm(data_x[i] - centers[j])
+                    if distance < distance_min:
+                        categories[i] = j
+                        distance_min = distance
+    
+                #updata the class center
+    
+                for i in range(k):
+                    mask = (categories == i)
+                    center_old = centers[i]
+                    centers[i] = np.sum(data_x[mask], axis = 0)/(mask.sum() + 1e-6) * lr + center_old * (1-lr)
+                #visualize
+    
+                plt.scatter(data_x[:, 0], data_x[:, 1], c = categories)
+                plt.plot(centers[:, 0], centers[:, 1], 'r+')
+                plt.show()
+                variations = np.sum(np.square(centers - centers_old), axis=1).sum()/k
+                centers_old = centers.copy()
+
+            if __name__ == "__main__":
+                data = get_data(100, 2)
+                kmeans(data, 3)
+     ```
    > 至于什么是EM算法，个人理解是，我们训练模型的本质上是根据已有的观测样本分布来去预测真实样本的分布，因为我们不知道
 真实的分布是什么，那只好通过观测样本的分布去拟合一个模型降低训练的误差，训练样本的误差低不是根本目的，真正想实现的是泛化
 误差，即在真实分布上的误差。在观测样本缺失部分信息的情况下（这里表现在不知道实际的标签），我们该怎么去处理呢？K-means这里

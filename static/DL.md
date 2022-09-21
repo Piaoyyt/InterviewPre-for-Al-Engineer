@@ -171,6 +171,7 @@ def convolution(img, kernel_size, padding, stride):
 #### 6.全局池化
 >即输出只有一个值，即全局上的池化操作。
 ### <a id="NormalizeLaryer"></a>1.4 归一化层
+![](pics/BN-LN-IN.png)  
 #### 1.BN
 > 所谓的BN操作，其实就是对于不同样本所对应的特征图，对于同一个通道下的feature map进行归一化，所以一共
 会有C也就是通道数这么多个用于归一化的均值和方差，即对B、H、W进行归一化操作，保留C。
