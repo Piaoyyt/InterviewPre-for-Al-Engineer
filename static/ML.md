@@ -1,7 +1,9 @@
 # 机器学习知识点总结
 
+- [1.监督模型](#SupervisedModel)
+- [2.无监督模型](#UnsupervisedModel)
 
-## 1.监督模型
+## <a id='SupervisedModel'><a/>1.监督模型
 
 ### 1.1 SVM
 > SVM全名叫支持向量机，是一种十分经典的分类和回归模型，为什么叫支持向量，
@@ -323,7 +325,7 @@ Adaptive：自适应这里的含义是，对于每一次学习器的训练，都
   1.求类内的协方差矩阵→类内散度（散度少一个除以样本数量-1的过程），本质上就是求类内样本数据各个维度上的协方差，刻画了各个属性之间的关系.
   2.计算类间的散度矩阵：两类情况下直接根据类中心计算协方差即可。
   3.通过类内和类间的散度矩阵来表示最终要生成的变换向量W（利用最大化变换后的类间散度和最小化类内散度来得到，这里也称作广义瑞丽商）。
-## 2.无监督模型
+## <a id='UnsupervisedModel'><a/>2.无监督模型
 > 所谓的无监督模型即在数据样本没有标签下的一种训练模型的方式。
 ### 1.聚类算法
 #### 1.1K-means(原型聚类方法)
@@ -464,3 +466,371 @@ Adaptive：自适应这里的含义是，对于每一次学习器的训练，都
 我们想要的东西，比如根据序列预测各个词的词性等，HMM里面是求各个隐状态下发生观测序列的联合概率，然后取最大的隐状态序列作为预测的；而MEMM里面是
 根据观测序列来去统计条件概率，并且是链式的求通过局部的得到最终的概率值；而CRF里面则是在全局里面将各个转移概率和条件概率当成输入得到一个全局的概率，
 是一种无向图模型。
+
+## <a id=''><a/>3.特征工程部分
+
+### 1.特征选择
+
+- 过滤式选择
+> 直接根据选取的过滤准则对特征进行一个筛选。
+  - 方差法
+    > 计算不同特征的方差，即对于不同样本来说，该特征的变化差异程度，对于那些方差很小的，即样本不同带来的变化极其小的可以
+> 剔除掉，只保留那些方差较大的特征。
+  - 相关系数法
+    > 计算各个特征和目标之间相关系数，相关性越高的特征应该被保留下来。
+  - 假设检验（卡方、t分布等）
+    > 对原始的数据分布作出相应的假设，然后针对假设和实际之间的差值去进行相应的验证。
+  - 互信息
+    > 计算不同特征之间或者特征和标签之间的互信息，即两种变量之间的关联程度。
+>
+- 包裹式选择
+> 所谓的包裹式选择即将最终评估的一个指标作为一个筛选的标准，典型的比如就是决策树里面结点的分裂过程，前向和后向的过程可以看作
+是一个包裹式的选择过程。
+- 嵌入式选择
+> 将特征的选择隐含的囊括在模型的训练过程中，典型的就是L1和L2正则化的过程。
+
+### 2.特征构造
+
+###3.特征降维
+> 主要是以PCA和LDA为主的方式。
+
+## <a id='Projects'><a/>4.典型作业和项目总结
+
+### 1.鸢尾花的二分类问题(感知机分类)
+> 根据所给的鸢尾花的数据集，要求对鸢尾花进行一个分类，其中鸢尾花数据集里面会给一些常用的属性数值，比如花瓣长度等。   
+> 对于这类特征属性不多的比较简单的分类问题，可以采用感知机这种较为简单的模型进行尝试，如果效果不好再可以更换支持向量机
+或者随机森林等这些更为复杂的模型，这里以感知机作为例子作为说明。
+- 数据的预处理部分（读数据、归一化、划分训练测试）
+```python
+import numpy as np
+#加载数据
+def load_data():
+    data_x = []
+    data_y = []
+    with open("iris.data") as f:
+        for line in f.readlines()[:100]:
+            flower_feature = list(map(float, filter(lambda x: x,line.strip().split(',')[:4])))
+            flower_label = line.strip().split(',')[-1]
+            if flower_label == "Iris-setosa":
+                data_y.append(-1)
+            else:
+                data_y.append(1)
+            data_x.append(flower_feature)
+    return data_x, data_y
+#归一化
+def normalize(x):
+    x = np.array(x)
+    x_mean = np.sum(x, axis= 0)/len(x)
+    x_variance = np.sum(np.square(x - x_mean.reshape(-1, 4)), axis=0)/len(x)
+    x = (x - x_mean)/x_variance
+    return x
+#划分数据集
+def split_train_test(data_x, data_y, test_ratio = 0.2, feature_dim = 2):
+    data_x, data_y = np.array(data_x), np.array(data_y)
+    data_x = data_x[:, :feature_dim]
+    random_index = np.random.permutation([i for i in range(len(data_x))])
+    sample_num = len(data_x)
+    train_x_index = random_index[:int(sample_num * (1- test_ratio))]
+    test_x_index = random_index[int(sample_num * (1- test_ratio)):]
+   #sample_num  = len(data_x)
+    train_x = data_x[train_x_index,]
+    train_y = data_y[train_x_index,]
+
+    test_x = data_x[test_x_index, ]
+    test_y = data_y[test_x_index, ]
+    return train_x, train_y, test_x, test_y
+```
+- 建立感知机模型
+```python
+class Perceptron:
+    #初始化感知机的参数，w和b
+    def __init__(self, input_dim = 4, output_dim = 1):
+        self.acticvation = activation
+        self.input_dim = input_dim
+        self.weight = np.random.randn(input_dim, output_dim)
+        self.bias = np.random.randn(output_dim)
+        self.lr = 0.5
+    #预测单个样本，即输入和w进行点乘，再加上偏置
+    def predict_sample(self, x):
+        output = np.array(x).dot(self.weight) + self.bias
+        output[output > 0] = 1
+        output[output < 0] = -1
+        return output
+    #前向传播过程
+    def forward(self, sample, label):
+        sample, label = np.array(sample).reshape(-1, self.input_dim), np.array(label).reshape(-1, 1)
+        output = sample.dot(self.weight) + self.bias
+        output_label_mul = output * label
+        #得到错误的标记
+        mask = (output_label_mul < 0)
+        if sum(mask.reshape(-1,)) != 0:
+            output_error = output[mask]
+            #反向传播
+            self.backward(output_error, label[mask], sample[mask.reshape(-1), ])
+    def backward(self, error_predict, label, x):
+        #error_predict = error_predict.reshape(-1, 1)
+        label = label.reshape(-1, 1)
+        x = x.reshape(-1, self.input_dim)
+        self.weight += self.lr * (x.transpose().dot(label))
+        self.bias += self.lr * label.sum().reshape(-1)
+
+```
+- 训练
+```python
+def train():
+    x, y = load_data()
+    x = normalize(x)
+    train_x, train_y, test_x, test_y = split_train_test(x, y)
+    visualize(train_x, train_y)
+    print("Sample feature dimensions:", len(train_x[0]))
+    print("Training sample numbers:", len(train_x))
+    print("Testing sample numbers:", len(test_x))
+    epochs = 50
+    model = Perceptron(input_dim= len(train_x[0]), output_dim= 1)
+    for epoch in range(epochs):
+        model.forward(train_x, train_y)
+        accuracy = test(model, test_x, test_y)
+        print(f"Epoch{epoch} accuracy {accuracy:.2f}")
+```
+### 2.逻辑回归分类
+
+- 建立逻辑回归模型
+```python
+class Logistic_Model(object):
+    
+    def __init__(self, input_dim, activation_func = lambda x: 1.0/(1 + np.exp(-x))):
+        self.weight = np.random.randn(input_dim, 1)#np.array([[0.48],[-0.61]])
+        self.bias = np.random.randn(1)#np.array([4.12])
+        print("初始化的参数W为：", self.weight, "\n参数b为：", self.bias)
+        self.activation = activation_func
+        self.lr = 0.001
+    def __call__(self, x, y, grad_variation = 'Once_All', backward = True):
+        '''
+        grad_variation: "Once_All"-每一次梯度更新将整个数据集传进去
+                        "SGD"-随机梯度下降，每一次传一个样本，收敛的更快
+        '''
+        return self.forward(x, y, grad_variation = 'Once_All', backward = backward)
+    def predict_sample(self, x):
+        return self.activation(x.dot(self.weight) + self.bias)
+    def forward(self, x, label, grad_variation = 'Once_All', backward = True):
+        if grad_variation == 'Once_All':
+            self.predict = self.activation(x.dot(self.weight) + self.bias)
+            if backward:
+                self.backward(x, label)
+        elif grad_variation == 'SGD':
+            nums = x.shape[0]
+            all_indexs = [0 for i in range(nums)]
+            for i in range(nums):
+                rand_index = int(random.uniform(0, len(all_indexs)))
+                self.predict = self.forward(x[rand_index])
+                if backward:
+                    self.backward(x[rand_index], label[rand_index])
+                del all_indexs[rand_index]
+        return self.predict
+    def loss(self, predict, label):
+        loss = -(label * np.log(predict) + (1 - label) * np.log(1 - predict)).sum()
+        return loss
+    def backward(self, x, label):
+        #print("更新前参数[Weight:", self.weight, "]"+ "参数[Bias:", self.bias, "]")
+            self.weight -= self.lr * x.transpose().dot((self.predict - label.reshape(-1, 1)))
+            self.bias -= self.lr * (self.predict - label).sum()
+                
+        #print("更新后参数[Weight:", self.weight, "]"+ "参数[Bias:", self.bias, "]")
+    def eval(self, x, label):
+        predict = self.predict_sample(x)
+        predict = predict.reshape(-1,)
+        label = label.reshape(-1,)
+        mask = (predict > 0.5)
+        mask2 = (predict <= 0.5)
+        predict[mask] = 1
+        predict[mask2] = 0
+        accuracy = (predict == label).sum()/(label.shape[0])
+        return accuracy
+
+x = data
+y = label
+model = Logistic_Model(2)
+epochs = 100
+for epoch in range(epochs):
+    pred = model(x, y, grad_variation = 'Once_All')
+    #model.backward(x, y, grad_variation='SGD')
+    train_accruacy = model.eval(train_x, train_y)
+    test_xaccuracy = model.eval(test_x, test_y)
+    print(f"Epoch {epoch} 训练准确率 {train_accruacy * 100}%, 测试准确率{test_xaccuracy * 100}%")
+print("参数W为：", model.weight, "\n参数b为：", model.bias)
+
+```
+### 2.垃圾邮件的分类（贝叶斯分类器）
+> 利用先验知识来去估计样本的后验概率是贝叶斯的核心思想，而朴素的核心是体现在样本里面的各个特征是独立互不影响的，
+这样就比较方便算各个类别下的条件概率。对于邮件，比较难处理的是邮件的内容，我们需要对邮件里面的文本进行提取，并转换成
+对应的vector表示。
+
+- 文本数据的提取（利用jieba库自带的分词功能）
+```python
+import jieba
+#加载哈工大的停用词和中文的停用词
+hit_words_path = './stopwords-master/hit_stopwords.txt'
+chinese_words_path = './stopwords-master/cn_stopwords.txt'
+hit_words =[line.strip() for line in open(hit_words_path, 'r', encoding='utf8').readlines()]
+chinese_words =[line.strip() for line in open(chinese_words_path, 'r', encoding='utf8').readlines()]
+filter_words = hit_words + chinese_words
+# print(hit_words)
+# print(chinese_words)
+
+    
+def load_news_data(file_path, label_file, filter_words):
+    fold_label = dict()
+    with open(label_file, 'r', encoding='utf8') as f:
+        for line in f.readlines():
+            line_split = line.strip().split('\t')
+            #print(line_split)
+            fold_label[line_split[0]] = line_split[1]
+    news_labels = []
+    news_data = []
+    for fold in os.listdir(file_path):
+        for txt in os.listdir(os.path.join(file_path, fold)):
+            with open(os.path.join(file_path, fold, txt), 'r', encoding='utf8') as f:
+                raw = f.read()
+            word_cut = jieba.cut(raw, cut_all = False)            #精简模式，返回一个可迭代的generator
+            word_list = list(word_cut)                            #generator转换为list
+            #word_list = preprocess(word_list, filter_words)
+            news_labels.append(fold)
+            news_data.append(word_list)
+    return news_data, news_labels, fold_label
+original_data, news_labels, truth_label = load_news_data('./SogouC/Sample', './SogouC/ClassList.txt', filter_words)
+```
+- 文本数据的预处理（分完词之后需要对一些词进行剔除，比如空白符之类）
+```python
+def preprocess(txts_list, filter_words, highfre_words):
+    '''
+    对文本进行预处理，过滤掉那些属于停用词的词,注意\u3000代表全角的空白符 ,\xa0是不间断空白符
+    Args:
+        words_list:单个文本的词列表
+        hit_words:停用词表
+    Return:
+        过滤掉的文本
+    '''
+    rule = re.compile('\s')  #是匹配所有空白符，包括换行适用于\u3000 \xa0，\S 非空白符，不包括换行。
+    rule2 = re.compile('nbsp')
+    ans = []
+    for txt in txts_list:
+        txt_new = []
+        for word in txt:
+            word = word.strip(b'\x00'.decode()).strip()#去除\x00这类
+            if not word: continue #空的直接跳过
+            if word not in filter_words and not rule.match(word) and word not in highfre_words and not rule2.match(word):
+                txt_new.append(word)
+        ans.append(txt_new)
+    return ans
+import collections
+#统计一下各个词前后处理过后出现的频数
+words_all = []
+for sentence in original_data:
+    for word in sentence:
+        words_all.append(word)
+words_count = collections.Counter(words_all)
+words_rank = sorted(words_count.items(), key = lambda x: -x[1])
+
+highfre_words = []
+news_data = preprocess(original_data, filter_words, highfre_words)
+
+words_all_filter = []
+for sentence in news_data:
+    for word in sentence:
+        words_all_filter.append(word)
+words_count_filter = collections.Counter(words_all_filter)
+words_rank_filter = sorted(words_count_filter.items(), key = lambda x: -x[1])
+
+```
+- TextToVector（粗暴利用onehot编码的形式）
+```python
+
+def txtTovector(sentence, words_list):
+    """
+    根据词字典将单个句子转换成对应的向量
+    Args:
+        sentence:单个的句子组成，由单词构成的列表
+        words_list:存放所有出现过的单词
+    Returns:
+        返回一个列表表示句子向量，对应位置为1表示对%alias的单词存在于句子中
+        example:
+        实际的句子：['my', 'dog', 'has', 'flea', 'problems', 'help', 'please']
+        返回的形式：[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1]
+        
+    """
+    vector = [0 for i in range(len(words_list))]
+    for word in sentence:
+        if word in words_list:
+            vector[words_list.index(word)] = 1
+    return vector
+#根据词条创建所有词的词字典，然后根据字典每一个句子可以转换成一个向量的形式
+def createword_dicts(all_words, delete_N, size_limit = 1000):
+    '''
+    Args:
+        all_words:全部的词汇列表【已经排序过】
+        delete_N:删除高频词汇的数量
+        size_limie:生成文本向量的长度限制
+    Returns:
+        最终用于训练的词汇表，用来生成文本向量
+    '''
+    size = 0
+    words_list = []
+    for index in range(delete_N, len(all_words), 1):
+        if size > size_limit: break
+        if not all_words[index].isdigit() and 1 < len(all_words[index]) < 5:
+            words_list.append(all_words[index])
+        size += 1
+    return words_list
+def newsTovectors(sentences, words, size_limit = 1000):
+    """
+    将所有的文本即句子转换成向量的形式
+    Returns:
+        返回所有句子的向量
+    """
+    words_list = createword_dicts(words, delete_N = 100, size_limit = size_limit)
+    vectors = []
+    for sentence in sentences:
+        vectors.append(txtTovector(sentence, words_list))
+    return vectors
+```
+- 构建贝叶斯模型（本质上就是计算先验和条件概率）
+```python
+
+def Calucate_prior_condition_laplacian(samples, labels):
+    '''
+    通过已知的样本向量和样本标签计算各个类别的条件概率以及先验概率【原始形式，不加拉普拉斯平滑，如果某个类别下某个特征出现的次数为0，那么这一项就是为0，所以最后的
+    条件概率求出来比较稀疏】
+    Args:
+        samples:样本向量
+        labels:样本标签即类别
+    Returns:
+        prior-字典，存储0和1的先验概率
+        condition-字典，存储各个类别下的条件概率，比如[0.2, 0.3, 0.4,0.1]说明的是类别0下各个单词出现的概率是这么多，假如新的单词为[1, 0, 1, 0],那么p(x|y)
+        可以算出来为0.2 * 0.4，即对应相乘，然后再乘以类别概率即可，此时概率加了log处理，所以只需要累加即log(0.2) + log(0.4)
+    '''
+    prior = collections.defaultdict(int)
+    condition = {0:[1 for i in range(len(samples[0]))], 1:[1 for i in range(len(samples[0]))]}
+    for sample, label in zip(samples, labels):
+        if label == 0:
+            condition[0] = [condition[0][i] + sample[i] for i in range(len(sample))]
+            prior[0] += 1
+        else:
+            condition[1] = [condition[1][i] + sample[i] for i in range(len(sample))]
+            prior[1] += 1
+    for key in prior:
+        prior[key] = prior[key] / len(samples)
+        for i in range(len(condition[key])):
+            condition[key][i]/= (sum([sum(samples[i]) for i in range(len(samples)) if labels[i] == key]) + 2)#每个位置即每个特征的统计值除以总的值，使得加起来概率能够为1
+            condition[key][i] = math.log(condition[key][i])
+    return prior, condition
+```
+### 3.贷款的预测分析
+> 根据用户的相关信息比如性别、结婚与否、教育经历等去预测用户是否贷款，做数据分析最关键的就是对数据的预处理和特征工程。
+- 预处理操作
+> 主要包括缺失值的处理、对object类型的数据进行编码（独热编码、序数编码）
+- 特征工程
+> 可以进行相关性的分析，剔除一些无关紧要的特征，也可以对某些特征进行一个组合，降维，根据实际的场景去做，这里将贷款的时间
+和数量进行了一个乘积，就使得特征的维度得到控制。
+- 训练部分
+> 首先是模型的选取；然后是训练的技巧，可以采用留出法、交叉验证等训练方式去得到模型，同时选取合适的评估函数，分类任务通常选取
+精确度、召回率、F1 score、交叉熵损失来评估；而回归任务则通常选取L1损失或者均方误差等来判断。
