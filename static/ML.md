@@ -356,7 +356,7 @@ Adaptive：自适应这里的含义是，对于每一次学习器的训练，都
             #load the data
             n, d = data_x.shape
             categories = np.zeros(n)
-            centers = np.random.randn(k, d)
+            centers = np.random.choice(k, d, replace=False)
             centers_old = centers.copy()
             lr = 0.5
                 #visualize the data
@@ -367,11 +367,11 @@ Adaptive：自适应这里的含义是，对于每一次学习器的训练，都
                 #update the class for each sample according the distance with the center
                 for i in range(n):
                     distance_min = float('inf')
-                for j in range(k):
-                    distance = np.linalg.norm(data_x[i] - centers[j])
-                    if distance < distance_min:
-                        categories[i] = j
-                        distance_min = distance
+                    for j in range(k):
+                        distance = np.linalg.norm(data_x[i] - centers[j])
+                        if distance < distance_min:
+                            categories[i] = j
+                            distance_min = distance
     
                 #updata the class center
     
